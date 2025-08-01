@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   return (
-    <header className="bg-white shadow-md"> {/* Changed from shadow-sm to shadow-md */}
+    <header className="bg-white shadow-md"> 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <div className="text-2xl font-bold text-blue-600">CareerCoach</div>
-            <div className="text-sm text-gray-500 ml-2">Empowering Bangladesh's Future</div>
+            <Link to="/" className="flex items-center">
+              <div className="text-2xl font-bold text-blue-600 cursor-pointer">CareerCoach</div>
+              <div className="text-sm text-gray-500 ml-2">Empowering Bangladesh's Future</div>
+            </Link>
           </div>
 
           {/* Navigation */}

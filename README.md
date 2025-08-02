@@ -43,7 +43,6 @@ CareerCoach leverages cutting-edge machine learning and natural language process
 ## System Architecture
 
 ### User Roles
-
 #### Anonymous Users
 - Browse success stories and testimonials
 - Access platform registration
@@ -60,28 +59,34 @@ CareerCoach leverages cutting-edge machine learning and natural language process
 - Database maintenance and updates
 - User management and platform monitoring
 
-## Getting Started
+---
 
-### Prerequisites
-```bash
-Node.js >= 14.0.0
-Python >= 3.8
-MongoDB >= 4.4
+## Technology Stack
 
-## Installations
+### Frontend
+- React.js
+- TypeScript
+- Tailwind CSS
 
-# Clone the repository
-git clone https://github.com/yourusername/careercoach.git
+### Backend
+- Java Spring Boot (RESTful APIs)
+- Python (AI/ML microservices)
 
-# Navigate to project directory
-cd careercoach
+### Database
+- MongoDB (Primary Database)
+- Redis (Caching Layer)
 
-# Install dependencies
-npm install
+### AI/ML Components
+- Natural Language Processing (Python)
+- Computer Vision (Facial Analysis)
+- Speech Recognition & Analysis
+- Machine Learning for Personalization
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
+### Deployment
+- Docker & Docker Compose
+- AWS / Google Cloud Platform
+- CI/CD Pipeline (GitHub Actions / Jenkins)
 
-# Start the development server
-npm run dev
+---
+
+## Project Structure

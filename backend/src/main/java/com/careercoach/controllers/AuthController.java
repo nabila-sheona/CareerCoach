@@ -20,7 +20,7 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; // ✅ Fixed: Inject by interface type
+    private PasswordEncoder passwordEncoder;  // ✅ Correctly injected as a general PasswordEncoder
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;

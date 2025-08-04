@@ -2,27 +2,27 @@ package com.careercoach.models;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-@Document(collection = "users")  // This tells Spring it's a MongoDB document
+@Document(collection = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User {
 
-    @Id  // This is Spring Data's @Id for MongoDB
-    private String id;  // MongoDB IDs are usually Strings (ObjectId)
+    @Id
+    private String id;
 
-    @NotBlank
+    @NotBlank(message = "Name is required")
     private String name;
 
-    @Email
-    @NotBlank
+    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email is required")
     private String email;
 
-    @NotBlank
-    private String password; // Hashed password
-
-    private String role = "USER";
+    @NotBlank(message = "Password is required")
+    private String password;
 }

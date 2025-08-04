@@ -1,62 +1,64 @@
 import React, { useState, useEffect, useContext, createContext } from 'react';
 import axios from 'axios';
 
-// Create the context
 const AuthContext = createContext(null);
 
-// Hook to use context
+// Hook to use the Auth context
 export function useAuth() {
   return useContext(AuthContext);
 }
 
-// AuthProvider component
+// AuthProvider wraps your app and provides authentication
 export function AuthProvider({ children }) {
   const auth = useProvideAuth();
-  return (
-    <AuthContext.Provider value={auth}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }
 
-// Hook that encapsulates auth logic
+// Hook for managing auth logic
 function useProvideAuth() {
   const [user, setUser] = useState(null);
 
-  // Load user from localStorage when app starts
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     const token = localStorage.getItem('jwtToken');
     if (storedUser && token) {
-      setUser(JSON.parse(storedUser)); // Set user if logged in
+      setUser(JSON.parse(storedUser));
     }
   }, []);
 
-  // Login function (connects to backend)
   const login = async (email, password) => {
     try {
-      // Send POST request to your backend (Spring Boot API)
-      const response = await axios.post('http://localhost:8080/api/auth/login', { email, password });
+      const response = await axios.post(
+        'http://localhost:8080/api/auth/login',
+        { email, password },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
 
-      // If login is successful, store the JWT token and user info
-      if (response.data !== "Invalid credentials") {
-        const { email } = response.data.user; // Assuming response contains user data
-        const token = response.data.token; // JWT token
+      // Assuming backend sends this shape:
+      // {
+      //   message: "Login successful",
+      //   token: "<jwt>",
+      //   user: { email: "<email>" }
+      // }
 
-        setUser({ email });
-        localStorage.setItem('user', JSON.stringify({ email })); // Store user info
-        localStorage.setItem('jwtToken', token); // Store JWT token
-        return true;
-      } else {
-        return false;
+      const { token, user: userInfo, message } = response.data;
+
+      if (token && userInfo?.email) {
+        setUser({ email: userInfo.email });
+        localStorage.setItem('user', JSON.stringify({ email: userInfo.email }));
+        localStorage.setItem('jwtToken', token);
+        return { success: true, message };
       }
+
+      return { success: false, message: 'Unexpected response structure' };
+
     } catch (error) {
-      console.error('Login failed:', error);
-      throw new Error('Login failed');
+      console.error('Login failed:', error.response?.data || error.message);
+      const errorMsg = error.response?.data?.message || 'Login failed: server rejected request';
+      return { success: false, message: errorMsg };
     }
   };
 
-  // Logout function
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
@@ -65,7 +67,7 @@ function useProvideAuth() {
 
   return {
     user,
-    isAuthenticated: !!user, // If user exists, they're authenticated
+    isAuthenticated: !!user,
     login,
     logout,
   };

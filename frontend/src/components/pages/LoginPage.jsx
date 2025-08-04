@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -16,17 +16,16 @@ const LoginPage = () => {
     setError('');
 
     try {
-      const success = await login(email, password);
+      const { success, message } = await login(email, password); // ✅ fix here
 
       if (success) {
-        toast.success('Login successful!', {
+        toast.success(message || 'Login successful!', {
           position: 'top-center',
         });
-
         navigate('/');
       } else {
-        setError('Invalid credentials');
-        toast.error('Invalid credentials', {
+        setError(message || 'Invalid credentials');
+        toast.error(message || 'Invalid credentials', {
           position: 'top-center',
         });
       }

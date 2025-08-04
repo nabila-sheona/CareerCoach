@@ -3,70 +3,82 @@ import axios from 'axios';
 
 const AuthContext = createContext(null);
 
-// Hook to use the Auth context
+// Hook to consume AuthContext
 export function useAuth() {
   return useContext(AuthContext);
 }
 
-// AuthProvider wraps your app and provides authentication
+// Wrap your app with this provider
 export function AuthProvider({ children }) {
   const auth = useProvideAuth();
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }
 
-// Hook for managing auth logic
+// Core authentication logic
 function useProvideAuth() {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
 
+  // Load persisted auth state
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('jwtToken');
-    if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
+    const storedToken = localStorage.getItem('jwtToken');
+
+    if (storedUser && storedToken) {
+      try {
+        setUser(JSON.parse(storedUser));
+        setToken(storedToken);
+      } catch (err) {
+        console.error('Error parsing stored user data:', err);
+      }
     }
   }, []);
 
+  // Login function aligned with backend
   const login = async (email, password) => {
+    const payload = { email, password };
     try {
       const response = await axios.post(
         'http://localhost:8080/api/auth/login',
-        { email, password },
+        payload,
         { headers: { 'Content-Type': 'application/json' } }
       );
 
-      // Assuming backend sends this shape:
-      // {
-      //   message: "Login successful",
-      //   token: "<jwt>",
-      //   user: { email: "<email>" }
-      // }
+      const { success, token, message } = response.data;
 
-      const { token, user: userInfo, message } = response.data;
+      if (success && token) {
+        const userData = {
+          email,
+          name: 'User', // optionally customize later
+        };
 
-      if (token && userInfo?.email) {
-        setUser({ email: userInfo.email });
-        localStorage.setItem('user', JSON.stringify({ email: userInfo.email }));
+        setUser(userData);
+        setToken(token);
+        localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('jwtToken', token);
+
         return { success: true, message };
       }
 
-      return { success: false, message: 'Unexpected response structure' };
-
+      return { success: false, message: 'Login failed: invalid credentials' };
     } catch (error) {
-      console.error('Login failed:', error.response?.data || error.message);
-      const errorMsg = error.response?.data?.message || 'Login failed: server rejected request';
+      const errorMsg = error.response?.data?.message || 'Login failed: server error';
+      console.error('Login failed:', errorMsg);
       return { success: false, message: errorMsg };
     }
   };
 
+  // Logout: clear state and localStorage
   const logout = () => {
     setUser(null);
+    setToken(null);
     localStorage.removeItem('user');
     localStorage.removeItem('jwtToken');
   };
 
   return {
     user,
+    token,
     isAuthenticated: !!user,
     login,
     logout,

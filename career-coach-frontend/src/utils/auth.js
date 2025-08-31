@@ -8,8 +8,18 @@ export const getCurrentUser = () => {
   return userStr ? JSON.parse(userStr) : null;
 };
 
+export const setAuthData = (token, user) => {
+  localStorage.setItem("token", token);
+  localStorage.setItem("user", JSON.stringify(user));
+};
+
 export const logout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
-  window.location.href = "/login";
+  window.location.href = "/";
+};
+
+export const hasRole = (role) => {
+  const user = getCurrentUser();
+  return user?.role === role;
 };

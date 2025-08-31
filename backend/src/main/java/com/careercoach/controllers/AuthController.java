@@ -5,18 +5,19 @@ import com.careercoach.service.UserService;
 import com.careercoach.utility.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * AuthController handles user registration and login functionality.
- */
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173") // Allow requests from your frontend
 public class AuthController {
 
     @Autowired
@@ -28,78 +29,123 @@ public class AuthController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    /**
-     * POST /register
-     * Handles user registration and returns a JWT token if successful
-     */
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
         try {
-            Optional<User> existingUser = userService.findByEmail(user.getEmail());
-            if (existingUser.isPresent()) {
+            // Validate input
+            if (user.getName() == null || user.getName().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of(
-                    "success", false,
-                    "message", "Email is already registered"
+                        "success", false,
+                        "message", "Name is required"
                 ));
             }
 
-            // Securely hash the password before storing
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            if (user.getEmail() == null || !user.getEmail().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "Valid email is required"
+                ));
+            }
+
+            if (user.getPassword() == null || user.getPassword().length() < 6) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "Password must be at least 6 characters"
+                ));
+            }
+
+            // Check if email exists
+            Optional<User> existingUser = userService.findByEmail(user.getEmail());
+            if (existingUser.isPresent()) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "Email is already registered"
+                ));
+            }
+
+            // Store raw password temporarily
+            String rawPassword = user.getPassword();
+
+            // Encode and save user
+            user.setPassword(passwordEncoder.encode(rawPassword));
             User savedUser = userService.register(user);
 
-            // Generate JWT token
+            // Generate token directly without authentication
             String token = jwtTokenUtil.generateToken(savedUser.getEmail());
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "token", token
+
+            // Return success response with token
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("token", token);
+            response.put("user", Map.of(
+                    "email", savedUser.getEmail(),
+                    "name", savedUser.getName()
             ));
+
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of(
-                "success", false,
-                "message", "Registration failed: " + e.getMessage()
+                    "success", false,
+                    "message", "Registration failed: " + e.getMessage()
             ));
         }
     }
 
-    /**
-     * POST /login
-     * Validates credentials and returns a JWT token if successful
-     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User userRequest) {
         try {
-            Optional<User> optionalUser = userService.findByEmail(userRequest.getEmail());
-            if (optionalUser.isEmpty()) {
-                return ResponseEntity.status(400).body(Map.of(
-                    "success", false,
-                    "message", "Invalid email or password"
+            // Validate input
+            if (userRequest.getEmail() == null || userRequest.getPassword() == null) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "Email and password are required"
                 ));
             }
 
-            User existingUser = optionalUser.get();
-
-            boolean passwordMatch = passwordEncoder.matches(
-                userRequest.getPassword(), existingUser.getPassword()
+            // Authenticate user
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            userRequest.getEmail(),
+                            userRequest.getPassword()
+                    )
             );
 
-            if (!passwordMatch) {
-                return ResponseEntity.status(400).body(Map.of(
-                    "success", false,
-                    "message", "Invalid email or password"
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // Get the email from authentication and generate token
+            String email = authentication.getName();
+            String token = jwtTokenUtil.generateToken(email);
+
+            // Get user details
+            Optional<User> user = userService.findByEmail(userRequest.getEmail());
+            if (user.isEmpty()) {
+                return ResponseEntity.status(404).body(Map.of(
+                        "success", false,
+                        "message", "User not found"
                 ));
             }
 
-            // Successful login
-            String token = jwtTokenUtil.generateToken(existingUser.getEmail());
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "token", token
+            // Return success response
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("token", token);
+            response.put("user", Map.of(
+                    "email", user.get().getEmail(),
+                    "name", user.get().getName()
             ));
+
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of(
-                "success", false,
-                "message", "Login error: " + e.getMessage()
+            return ResponseEntity.status(401).body(Map.of(
+                    "success", false,
+                    "message", "Invalid email or password"
             ));
         }
+
     }
 }

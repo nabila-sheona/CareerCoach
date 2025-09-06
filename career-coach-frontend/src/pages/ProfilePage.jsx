@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { userAPI } from "./shared/api";
+
 import ProfilePictureUpload from "./shared/ProfilePictureUpload";
 import {
   validateProfile,
@@ -18,35 +19,6 @@ import {
   validateDateOfBirth,
   validateSkills,
 } from "../utils/profileValidation";
-
-// MUI imports
-import {
-  Container,
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  CardHeader,
-  Button,
-  TextField,
-  Chip,
-  Avatar,
-  LinearProgress,
-  Alert,
-  IconButton,
-  CircularProgress,
-  Grid,
-  Divider,
-  Paper,
-} from "@mui/material";
-import {
-  Edit as EditIcon,
-  Save as SaveIcon,
-  Cancel as CancelIcon,
-  Close as CloseIcon,
-  Add as AddIcon,
-  Delete as DeleteIcon,
-} from "@mui/icons-material";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
@@ -377,424 +349,530 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-      >
-        <CircularProgress size={60} />
-      </Box>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Alerts */}
-      {error && (
-        <Alert
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Alerts */}
+        {error && (
+          <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+            <span className="block sm:inline">{error}</span>
+            <button
+              className="absolute top-0 bottom-0 right-0 px-4 py-3"
               onClick={() => setError("")}
             >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-          sx={{ mb: 3 }}
-        >
-          {error}
-        </Alert>
-      )}
-      {success && (
-        <Alert
-          severity="success"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
+              <span className="sr-only">Dismiss</span>×
+            </button>
+          </div>
+        )}
+        {success && (
+          <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+            <span className="block sm:inline">{success}</span>
+            <button
+              className="absolute top-0 bottom-0 right-0 px-4 py-3"
               onClick={() => setSuccess("")}
             >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-          sx={{ mb: 3 }}
-        >
-          {success}
-        </Alert>
-      )}
+              <span className="sr-only">Dismiss</span>×
+            </button>
+          </div>
+        )}
 
-      {/* Profile Completion Progress */}
-      <Card sx={{ mb: 4 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
+        {/* Profile Completion Progress */}
+        <div className="bg-white shadow rounded-lg p-6 mb-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
             Profile Completion
-          </Typography>
-          <Box display="flex" alignItems="center">
-            <Box width="100%" mr={1}>
-              <LinearProgress
-                variant="determinate"
-                value={profileProgress}
-                sx={{ height: 10, borderRadius: 5 }}
-              />
-            </Box>
-            <Box minWidth={35}>
-              <Typography variant="body2" color="textSecondary">
-                {Math.round(profileProgress)}%
-              </Typography>
-            </Box>
-          </Box>
-        </CardContent>
-      </Card>
+          </h3>
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div
+              className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+              style={{ width: `${profileProgress}%` }}
+            ></div>
+          </div>
+          <p className="text-sm text-gray-600 mt-2">
+            {Math.round(profileProgress)}% complete
+          </p>
+        </div>
 
-      {/* Main Profile Card */}
-      <Card>
-        {/* Header */}
-        <CardHeader
-          title="My Profile"
-          titleTypographyProps={{ variant: "h4", component: "h1" }}
-          action={
-            !isEditing ? (
-              <Button
-                variant="contained"
-                startIcon={<EditIcon />}
+        {/* Main Profile Card */}
+        <div className="bg-white shadow rounded-lg">
+          {/* Header */}
+          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
+            {!isEditing ? (
+              <button
                 onClick={() => setIsEditing(true)}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
+                <svg
+                  className="-ml-1 mr-2 h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
                 Edit Profile
-              </Button>
+              </button>
             ) : (
-              <Box>
-                <Button
-                  variant="contained"
-                  color="success"
-                  startIcon={<SaveIcon />}
+              <div className="space-x-2">
+                <button
                   onClick={handleSave}
                   disabled={saving}
-                  sx={{ mr: 1 }}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
                 >
+                  <svg
+                    className="-ml-1 mr-2 h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
                   {saving ? "Saving..." : "Save"}
-                </Button>
-                <Button
-                  variant="outlined"
-                  startIcon={<CancelIcon />}
+                </button>
+                <button
                   onClick={handleCancel}
                   disabled={saving}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
+                  <svg
+                    className="-ml-1 mr-2 h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
                   Cancel
-                </Button>
-              </Box>
-            )
-          }
-        />
-
-        <CardContent>
-          <Grid container spacing={4}>
-            {/* Profile Picture Section */}
-            <Grid item xs={12} md={4}>
-              <Box display="flex" flexDirection="column" alignItems="center">
-                <ProfilePictureUpload
-                  currentImage={profile.profilePicture}
-                  onImageUpdate={handleProfilePictureUpdate}
-                  size={128}
-                  editable={isEditing}
-                />
-                <Typography variant="h5" sx={{ mt: 2 }}>
-                  {profile.name || "Your Name"}
-                </Typography>
-                <Typography color="textSecondary">
-                  {profile.jobTitle || "Job Title"}
-                </Typography>
-                <Typography color="textSecondary">
-                  {profile.company || "Company"}
-                </Typography>
-              </Box>
-            </Grid>
-
-            {/* Basic Information */}
-            <Grid item xs={12} md={8}>
-              <Typography variant="h6" gutterBottom>
-                Basic Information
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Full Name"
-                    value={profile.name || ""}
-                    onChange={(e) => handleInputChange("name", e.target.value)}
-                    onBlur={() => handleBlur("name")}
-                    disabled={!isEditing}
-                    error={touched.name && Boolean(errors.name)}
-                    helperText={touched.name && errors.name}
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Email"
-                    value={profile.email || ""}
-                    disabled
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Phone"
-                    value={profile.phone || ""}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                    onBlur={() => handleBlur("phone")}
-                    disabled={!isEditing}
-                    error={touched.phone && Boolean(errors.phone)}
-                    helperText={touched.phone && errors.phone}
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Date of Birth"
-                    type="date"
-                    value={profile.dateOfBirth || ""}
-                    onChange={(e) =>
-                      handleInputChange("dateOfBirth", e.target.value)
-                    }
-                    onBlur={() => handleBlur("dateOfBirth")}
-                    disabled={!isEditing}
-                    error={touched.dateOfBirth && Boolean(errors.dateOfBirth)}
-                    helperText={touched.dateOfBirth && errors.dateOfBirth}
-                    InputLabelProps={{ shrink: true }}
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Address"
-                    value={profile.address || ""}
-                    onChange={(e) =>
-                      handleInputChange("address", e.target.value)
-                    }
-                    disabled={!isEditing}
-                    multiline
-                    rows={2}
-                    fullWidth
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-
-          <Divider sx={{ my: 4 }} />
-
-          {/* Professional Information */}
-          <Box mt={3}>
-            <Typography variant="h6" gutterBottom>
-              Professional Information
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Job Title"
-                  value={profile.jobTitle || ""}
-                  onChange={(e) =>
-                    handleInputChange("jobTitle", e.target.value)
-                  }
-                  onBlur={() => handleBlur("jobTitle")}
-                  disabled={!isEditing}
-                  error={touched.jobTitle && Boolean(errors.jobTitle)}
-                  helperText={touched.jobTitle && errors.jobTitle}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Company"
-                  value={profile.company || ""}
-                  onChange={(e) => handleInputChange("company", e.target.value)}
-                  onBlur={() => handleBlur("company")}
-                  disabled={!isEditing}
-                  error={touched.company && Boolean(errors.company)}
-                  helperText={touched.company && errors.company}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Bio"
-                  value={profile.bio || ""}
-                  onChange={(e) => handleInputChange("bio", e.target.value)}
-                  onBlur={() => handleBlur("bio")}
-                  disabled={!isEditing}
-                  error={touched.bio && Boolean(errors.bio)}
-                  helperText={touched.bio && errors.bio}
-                  multiline
-                  rows={4}
-                  placeholder="Tell us about yourself..."
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Experience"
-                  value={profile.experience || ""}
-                  onChange={(e) =>
-                    handleInputChange("experience", e.target.value)
-                  }
-                  onBlur={() => handleBlur("experience")}
-                  disabled={!isEditing}
-                  error={touched.experience && Boolean(errors.experience)}
-                  helperText={touched.experience && errors.experience}
-                  multiline
-                  rows={3}
-                  placeholder="Describe your work experience..."
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Education"
-                  value={profile.education || ""}
-                  onChange={(e) =>
-                    handleInputChange("education", e.target.value)
-                  }
-                  onBlur={() => handleBlur("education")}
-                  disabled={!isEditing}
-                  error={touched.education && Boolean(errors.education)}
-                  helperText={touched.education && errors.education}
-                  multiline
-                  rows={3}
-                  placeholder="Describe your educational background..."
-                  fullWidth
-                />
-              </Grid>
-            </Grid>
-          </Box>
-
-          <Divider sx={{ my: 4 }} />
-
-          {/* Skills Section */}
-          <Box mt={3}>
-            <Typography variant="h6" gutterBottom>
-              Skills
-            </Typography>
-            <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
-              {profile.skills?.map((skill, index) => (
-                <Chip
-                  key={index}
-                  label={skill}
-                  onDelete={isEditing ? () => handleRemoveSkill(skill) : null}
-                  color="primary"
-                  variant="outlined"
-                />
-              ))}
-            </Box>
-            {isEditing && (
-              <Box display="flex" gap={1} alignItems="center">
-                <TextField
-                  value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleAddSkill()}
-                  placeholder="Add a skill"
-                  size="small"
-                />
-                <Button
-                  variant="contained"
-                  onClick={handleAddSkill}
-                  startIcon={<AddIcon />}
-                >
-                  Add
-                </Button>
-              </Box>
+                </button>
+              </div>
             )}
-          </Box>
+          </div>
 
-          <Divider sx={{ my: 4 }} />
+          <div className="p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Profile Picture Section */}
+              <div className="lg:col-span-1">
+                <div className="flex flex-col items-center">
+                  <ProfilePictureUpload
+                    currentImage={profile.profilePicture}
+                    onImageUpdate={handleProfilePictureUpdate}
+                    size={128}
+                    editable={isEditing}
+                  />
+                  <h2 className="mt-4 text-xl font-semibold text-gray-900">
+                    {profile.name || "Your Name"}
+                  </h2>
+                  <p className="text-gray-600">
+                    {profile.jobTitle || "Job Title"}
+                  </p>
+                  <p className="text-gray-500">
+                    {profile.company || "Company"}
+                  </p>
+                </div>
+              </div>
 
-          {/* Certifications Section */}
-          <Box mt={3}>
-            <Typography variant="h6" gutterBottom>
-              Certifications
-            </Typography>
-            <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
-              {profile.certifications?.map((cert, index) => (
-                <Chip
-                  key={index}
-                  label={cert}
-                  onDelete={
-                    isEditing ? () => handleRemoveCertification(cert) : null
-                  }
-                  color="success"
-                  variant="outlined"
-                />
-              ))}
-            </Box>
-            {isEditing && (
-              <Box display="flex" gap={1} alignItems="center">
-                <TextField
-                  value={newCertification}
-                  onChange={(e) => setNewCertification(e.target.value)}
-                  onKeyPress={(e) =>
-                    e.key === "Enter" && handleAddCertification()
-                  }
-                  placeholder="Add a certification"
-                  size="small"
-                />
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={handleAddCertification}
-                  startIcon={<AddIcon />}
-                >
-                  Add
-                </Button>
-              </Box>
-            )}
-          </Box>
+              {/* Basic Information */}
+              <div className="lg:col-span-2">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  Basic Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={profile.name || ""}
+                      onChange={(e) =>
+                        handleInputChange("name", e.target.value)
+                      }
+                      onBlur={() => handleBlur("name")}
+                      disabled={!isEditing}
+                      className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 ${
+                        touched.name && errors.name
+                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                      }`}
+                    />
+                    {touched.name && errors.name && (
+                      <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={profile.email || ""}
+                      disabled
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 text-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      value={profile.phone || ""}
+                      onChange={(e) =>
+                        handleInputChange("phone", e.target.value)
+                      }
+                      onBlur={() => handleBlur("phone")}
+                      disabled={!isEditing}
+                      className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 ${
+                        touched.phone && errors.phone
+                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                      }`}
+                    />
+                    {touched.phone && errors.phone && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.phone}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Date of Birth
+                    </label>
+                    <input
+                      type="date"
+                      value={profile.dateOfBirth || ""}
+                      onChange={(e) =>
+                        handleInputChange("dateOfBirth", e.target.value)
+                      }
+                      onBlur={() => handleBlur("dateOfBirth")}
+                      disabled={!isEditing}
+                      className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 ${
+                        touched.dateOfBirth && errors.dateOfBirth
+                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                      }`}
+                    />
+                    {touched.dateOfBirth && errors.dateOfBirth && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.dateOfBirth}
+                      </p>
+                    )}
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Address
+                    </label>
+                    <textarea
+                      value={profile.address || ""}
+                      onChange={(e) =>
+                        handleInputChange("address", e.target.value)
+                      }
+                      disabled={!isEditing}
+                      rows={2}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
 
-          <Divider sx={{ my: 4 }} />
+            {/* Professional Information */}
+            <div className="mt-8">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Professional Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Job Title
+                  </label>
+                  <input
+                    type="text"
+                    value={profile.jobTitle || ""}
+                    onChange={(e) =>
+                      handleInputChange("jobTitle", e.target.value)
+                    }
+                    onBlur={() => handleBlur("jobTitle")}
+                    disabled={!isEditing}
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 ${
+                      touched.jobTitle && errors.jobTitle
+                        ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    }`}
+                  />
+                  {touched.jobTitle && errors.jobTitle && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.jobTitle}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Company
+                  </label>
+                  <input
+                    type="text"
+                    value={profile.company || ""}
+                    onChange={(e) =>
+                      handleInputChange("company", e.target.value)
+                    }
+                    onBlur={() => handleBlur("company")}
+                    disabled={!isEditing}
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 ${
+                      touched.company && errors.company
+                        ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    }`}
+                  />
+                  {touched.company && errors.company && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.company}
+                    </p>
+                  )}
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Bio
+                  </label>
+                  <textarea
+                    value={profile.bio || ""}
+                    onChange={(e) => handleInputChange("bio", e.target.value)}
+                    onBlur={() => handleBlur("bio")}
+                    disabled={!isEditing}
+                    rows={4}
+                    placeholder="Tell us about yourself..."
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 ${
+                      touched.bio && errors.bio
+                        ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    }`}
+                  />
+                  {touched.bio && errors.bio && (
+                    <p className="mt-1 text-sm text-red-600">{errors.bio}</p>
+                  )}
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Experience
+                  </label>
+                  <textarea
+                    value={profile.experience || ""}
+                    onChange={(e) =>
+                      handleInputChange("experience", e.target.value)
+                    }
+                    onBlur={() => handleBlur("experience")}
+                    disabled={!isEditing}
+                    rows={3}
+                    placeholder="Describe your work experience..."
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 ${
+                      touched.experience && errors.experience
+                        ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    }`}
+                  />
+                  {touched.experience && errors.experience && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.experience}
+                    </p>
+                  )}
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Education
+                  </label>
+                  <textarea
+                    value={profile.education || ""}
+                    onChange={(e) =>
+                      handleInputChange("education", e.target.value)
+                    }
+                    onBlur={() => handleBlur("education")}
+                    disabled={!isEditing}
+                    rows={3}
+                    placeholder="Describe your educational background..."
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 ${
+                      touched.education && errors.education
+                        ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    }`}
+                  />
+                  {touched.education && errors.education && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.education}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
 
-          {/* Social Links */}
-          <Box mt={3}>
-            <Typography variant="h6" gutterBottom>
-              Social Links
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="LinkedIn URL"
-                  value={profile.linkedinUrl || ""}
-                  onChange={(e) =>
-                    handleInputChange("linkedinUrl", e.target.value)
-                  }
-                  onBlur={() => handleBlur("linkedinUrl")}
-                  disabled={!isEditing}
-                  error={touched.linkedinUrl && Boolean(errors.linkedinUrl)}
-                  helperText={touched.linkedinUrl && errors.linkedinUrl}
-                  placeholder="https://linkedin.com/in/yourprofile"
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="GitHub URL"
-                  value={profile.githubUrl || ""}
-                  onChange={(e) =>
-                    handleInputChange("githubUrl", e.target.value)
-                  }
-                  onBlur={() => handleBlur("githubUrl")}
-                  disabled={!isEditing}
-                  error={touched.githubUrl && Boolean(errors.githubUrl)}
-                  helperText={touched.githubUrl && errors.githubUrl}
-                  placeholder="https://github.com/yourusername"
-                  fullWidth
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        </CardContent>
-      </Card>
-    </Container>
+            {/* Skills Section */}
+            <div className="mt-8">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Skills</h3>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {profile.skills?.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                  >
+                    {skill}
+                    {isEditing && (
+                      <button
+                        onClick={() => handleRemoveSkill(skill)}
+                        className="ml-2 text-blue-600 hover:text-blue-800"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </span>
+                ))}
+              </div>
+              {isEditing && (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newSkill}
+                    onChange={(e) => setNewSkill(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleAddSkill()}
+                    placeholder="Add a skill"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <button
+                    onClick={handleAddSkill}
+                    className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Certifications Section */}
+            <div className="mt-8">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Certifications
+              </h3>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {profile.certifications?.map((cert, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"
+                  >
+                    {cert}
+                    {isEditing && (
+                      <button
+                        onClick={() => handleRemoveCertification(cert)}
+                        className="ml-2 text-green-600 hover:text-green-800"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </span>
+                ))}
+              </div>
+              {isEditing && (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newCertification}
+                    onChange={(e) => setNewCertification(e.target.value)}
+                    onKeyPress={(e) =>
+                      e.key === "Enter" && handleAddCertification()
+                    }
+                    placeholder="Add a certification"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <button
+                    onClick={handleAddCertification}
+                    className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Social Links */}
+            <div className="mt-8">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Social Links
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    LinkedIn URL
+                  </label>
+                  <input
+                    type="url"
+                    value={profile.linkedinUrl || ""}
+                    onChange={(e) =>
+                      handleInputChange("linkedinUrl", e.target.value)
+                    }
+                    onBlur={() => handleBlur("linkedinUrl")}
+                    disabled={!isEditing}
+                    placeholder="https://linkedin.com/in/yourprofile"
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 ${
+                      touched.linkedinUrl && errors.linkedinUrl
+                        ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    }`}
+                  />
+                  {touched.linkedinUrl && errors.linkedinUrl && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.linkedinUrl}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    GitHub URL
+                  </label>
+                  <input
+                    type="url"
+                    value={profile.githubUrl || ""}
+                    onChange={(e) =>
+                      handleInputChange("githubUrl", e.target.value)
+                    }
+                    onBlur={() => handleBlur("githubUrl")}
+                    disabled={!isEditing}
+                    placeholder="https://github.com/yourusername"
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 ${
+                      touched.githubUrl && errors.githubUrl
+                        ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    }`}
+                  />
+                  {touched.githubUrl && errors.githubUrl && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.githubUrl}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

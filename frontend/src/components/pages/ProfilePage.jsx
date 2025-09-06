@@ -50,7 +50,6 @@ const ProfilePage = () => {
 
   useEffect(() => {
     fetchProfile();
-    fetchProgress();
   }, []);
 
   const fetchProfile = async () => {
@@ -69,13 +68,29 @@ const ProfilePage = () => {
       const response = await userAPI.getProfile();
       
       // Handle different response structures
+      let profileData = {};
       if (response.data && response.data.success) {
-        setProfile(response.data.user || response.data.data || {});
+        profileData = response.data.user || response.data.data || {};
       } else if (response.data) {
-        setProfile(response.data);
+        profileData = response.data;
       } else {
         setError('Invalid response format from server');
+        return;
       }
+      
+      // Ensure skills and certifications are arrays
+      const normalizedProfile = {
+        ...profileData,
+        skills: Array.isArray(profileData.skills) ? profileData.skills : [],
+        certifications: Array.isArray(profileData.certifications) ? profileData.certifications : []
+      };
+      
+      setProfile(normalizedProfile);
+      
+      // Calculate progress after profile is loaded
+      const progress = calculateProfileCompletion(normalizedProfile);
+      setProfileProgress(progress);
+      console.log('Profile loaded, progress calculated:', progress, '%');
     } catch (err) {
       console.error('Profile fetch error:', err);
       if (err.response?.status === 401) {
@@ -129,7 +144,11 @@ const ProfilePage = () => {
       setIsEditing(false);
       setErrors({});
       setTouched({});
-      fetchProgress();
+      
+      // Calculate progress locally after saving
+      const newProgress = calculateProfileCompletion(profile);
+      setProfileProgress(newProgress);
+      
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError('Failed to update profile');
@@ -144,12 +163,17 @@ const ProfilePage = () => {
   };
 
   const handleInputChange = (field, value) => {
-    setProfile(prev => ({ ...prev, [field]: value }));
+    const updatedProfile = { ...profile, [field]: value };
+    setProfile(updatedProfile);
     
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: null }));
     }
+    
+    // Dynamically update profile completion
+    const newProgress = calculateProfileCompletion(updatedProfile);
+    setProfileProgress(newProgress);
   };
 
   const handleBlur = (field) => {
@@ -201,46 +225,95 @@ const ProfilePage = () => {
   };
 
   const handleAddSkill = () => {
-    if (newSkill.trim() && !profile.skills.includes(newSkill.trim())) {
-      setProfile(prev => ({
-        ...prev,
-        skills: [...prev.skills, newSkill.trim()]
-      }));
-      setNewSkill('');
+    const trimmedSkill = newSkill.trim();
+    if (trimmedSkill && trimmedSkill.length > 0) {
+      // Ensure skills is an array and doesn't already contain the skill
+      const currentSkills = Array.isArray(profile.skills) ? profile.skills : [];
+      if (!currentSkills.includes(trimmedSkill)) {
+        const updatedProfile = {
+          ...profile,
+          skills: [...currentSkills, trimmedSkill]
+        };
+        setProfile(updatedProfile);
+        setNewSkill('');
+        
+        // Dynamically update profile completion
+        const newProgress = calculateProfileCompletion(updatedProfile);
+        setProfileProgress(newProgress);
+        
+        console.log('Skill added:', trimmedSkill, 'Total skills:', updatedProfile.skills.length);
+      } else {
+        console.log('Skill already exists:', trimmedSkill);
+      }
     }
   };
 
   const handleRemoveSkill = (skillToRemove) => {
-    setProfile(prev => ({
-      ...prev,
-      skills: prev.skills.filter(skill => skill !== skillToRemove)
-    }));
+    const currentSkills = Array.isArray(profile.skills) ? profile.skills : [];
+    const updatedProfile = {
+      ...profile,
+      skills: currentSkills.filter(skill => skill !== skillToRemove)
+    };
+    setProfile(updatedProfile);
+    
+    // Dynamically update profile completion
+    const newProgress = calculateProfileCompletion(updatedProfile);
+    setProfileProgress(newProgress);
+    
+    console.log('Skill removed:', skillToRemove, 'Remaining skills:', updatedProfile.skills.length);
   };
 
   const handleAddCertification = () => {
-    if (newCertification.trim() && !profile.certifications.includes(newCertification.trim())) {
-      setProfile(prev => ({
-        ...prev,
-        certifications: [...prev.certifications, newCertification.trim()]
-      }));
-      setNewCertification('');
+    const trimmedCertification = newCertification.trim();
+    if (trimmedCertification && trimmedCertification.length > 0) {
+      // Ensure certifications is an array and doesn't already contain the certification
+      const currentCertifications = Array.isArray(profile.certifications) ? profile.certifications : [];
+      if (!currentCertifications.includes(trimmedCertification)) {
+        const updatedProfile = {
+          ...profile,
+          certifications: [...currentCertifications, trimmedCertification]
+        };
+        setProfile(updatedProfile);
+        setNewCertification('');
+        
+        // Dynamically update profile completion
+        const newProgress = calculateProfileCompletion(updatedProfile);
+        setProfileProgress(newProgress);
+        
+        console.log('Certification added:', trimmedCertification, 'Total certifications:', updatedProfile.certifications.length);
+      } else {
+        console.log('Certification already exists:', trimmedCertification);
+      }
     }
   };
 
   const handleRemoveCertification = (certToRemove) => {
-    setProfile(prev => ({
-      ...prev,
-      certifications: prev.certifications.filter(cert => cert !== certToRemove)
-    }));
+    const currentCertifications = Array.isArray(profile.certifications) ? profile.certifications : [];
+    const updatedProfile = {
+      ...profile,
+      certifications: currentCertifications.filter(cert => cert !== certToRemove)
+    };
+    setProfile(updatedProfile);
+    
+    // Dynamically update profile completion
+    const newProgress = calculateProfileCompletion(updatedProfile);
+    setProfileProgress(newProgress);
+    
+    console.log('Certification removed:', certToRemove, 'Remaining certifications:', updatedProfile.certifications.length);
   };
 
   const handleProfilePictureUpdate = (imageUrl) => {
-    setProfile(prev => ({
-      ...prev,
+    const updatedProfile = {
+      ...profile,
       profilePicture: imageUrl
-    }));
+    };
+    setProfile(updatedProfile);
     setSuccess('Profile picture updated successfully!');
     setTimeout(() => setSuccess(''), 3000);
+    
+    // Dynamically update profile completion
+    const newProgress = calculateProfileCompletion(updatedProfile);
+    setProfileProgress(newProgress);
   };
 
   if (loading) {

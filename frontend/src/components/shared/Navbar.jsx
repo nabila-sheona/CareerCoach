@@ -23,9 +23,6 @@ const Navbar = () => {
             <Link to="/features" className="text-gray-600 hover:text-gray-900">Features</Link>
             <Link to="/success-stories" className="text-gray-600 hover:text-gray-900">Success Stories</Link>
             <Link to="/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</Link>
-            {isAuthenticated && (
-              <Link to="/profile" className="text-gray-600 hover:text-gray-900">Profile</Link>
-            )}
           </nav>
 
           {/* User Info & Buttons */}

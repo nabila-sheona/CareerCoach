@@ -66,14 +66,10 @@ public class AuthController {
                 ));
             }
 
-            // Store raw password temporarily
-            String rawPassword = user.getPassword();
-
-            // Encode and save user
-            user.setPassword(passwordEncoder.encode(rawPassword));
+            // Save user (UserService will handle password encoding)
             User savedUser = userService.register(user);
 
-            // Generate token directly without authentication
+            // Generate token
             String token = jwtTokenUtil.generateToken(savedUser.getEmail());
 
             // Return success response with token
@@ -106,6 +102,15 @@ public class AuthController {
                 ));
             }
 
+            // Check if user exists first
+            Optional<User> userOptional = userService.findByEmail(userRequest.getEmail());
+            if (userOptional.isEmpty()) {
+                return ResponseEntity.status(401).body(Map.of(
+                        "success", false,
+                        "message", "Invalid email or password"
+                ));
+            }
+
             // Authenticate user
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -116,36 +121,28 @@ public class AuthController {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // Get the email from authentication and generate token
-            String email = authentication.getName();
-            String token = jwtTokenUtil.generateToken(email);
+            // Generate token
+            String token = jwtTokenUtil.generateToken(userRequest.getEmail());
 
-            // Get user details
-            Optional<User> user = userService.findByEmail(userRequest.getEmail());
-            if (user.isEmpty()) {
-                return ResponseEntity.status(404).body(Map.of(
-                        "success", false,
-                        "message", "User not found"
-                ));
-            }
+            User user = userOptional.get();
 
             // Return success response
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("token", token);
             response.put("user", Map.of(
-                    "email", user.get().getEmail(),
-                    "name", user.get().getName()
+                    "email", user.getEmail(),
+                    "name", user.getName()
             ));
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
+            System.out.println("Login error: " + e.getMessage());
             return ResponseEntity.status(401).body(Map.of(
                     "success", false,
                     "message", "Invalid email or password"
             ));
         }
-
     }
 }

@@ -3,7 +3,7 @@ package com.careercoach.service;
 import com.careercoach.models.User;
 import com.careercoach.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,7 +14,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public User register(User user) {
         // Check if email already exists
@@ -23,7 +24,7 @@ public class UserService {
             throw new RuntimeException("Email is already registered.");
         }
 
-        // Hash the password before saving
+        // Hash the password before saving (only encode once here)
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
 

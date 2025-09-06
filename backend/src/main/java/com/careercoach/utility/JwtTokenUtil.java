@@ -8,7 +8,7 @@ import java.util.Date;
 @Component
 public class JwtTokenUtil {
 
-    private static final String SECRET_KEY = "sheona";
+    private static final String SECRET_KEY = "sheona_careercoach_secret_key_2024_very_long_for_security";
     private static final long EXPIRATION_TIME = 86400000; // 24 hours
 
     public String generateToken(String email) {
@@ -22,8 +22,14 @@ public class JwtTokenUtil {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
-            return true;
+            Claims claims = Jwts.parser()
+                    .setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            // Check if token is expired
+            return !claims.getExpiration().before(new Date());
+
         } catch (SignatureException e) {
             System.out.println("Invalid JWT signature: " + e.getMessage());
         } catch (MalformedJwtException e) {
@@ -34,15 +40,22 @@ public class JwtTokenUtil {
             System.out.println("JWT token is unsupported: " + e.getMessage());
         } catch (IllegalArgumentException e) {
             System.out.println("JWT claims string is empty: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("JWT validation error: " + e.getMessage());
         }
         return false;
     }
 
     public String getUsernameFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (Exception e) {
+            System.out.println("Error extracting username from token: " + e.getMessage());
+            return null;
+        }
     }
 }

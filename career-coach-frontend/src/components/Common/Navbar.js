@@ -21,6 +21,7 @@ import {
   AdminPanelSettings as AdminIcon,
 } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
+import { Link, useLocation } from "react-router-dom";
 
 function HideOnScroll(props) {
   const { children } = props;
@@ -35,6 +36,8 @@ function HideOnScroll(props) {
 
 const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
   const { userState } = useAuth();
+  const location = useLocation();
+
   const [mobileMenuAnchor, setMobileMenuAnchor] = useState(null);
   const [notificationAnchor, setNotificationAnchor] = useState(null);
 
@@ -84,6 +87,7 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
         >
           <Container maxWidth="xl">
             <Toolbar>
+              {/* Logo */}
               <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
                 <Box
                   sx={{
@@ -113,40 +117,112 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
 
               {/* Desktop Navigation */}
               <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1, mx: 2 }}>
-                <Button color="inherit" onClick={() => scrollToSection("home")}>
-                  Home
-                </Button>
                 <Button
                   color="inherit"
-                  onClick={() => scrollToSection("features")}
+                  component={Link}
+                  to="/"
+                  sx={{
+                    fontWeight: location.pathname === "/" ? "bold" : "normal",
+                  }}
+                >
+                  Home
+                </Button>
+
+                <Button
+                  color="inherit"
+                  onClick={() =>
+                    document
+                      .getElementById("features")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
                 >
                   Features
                 </Button>
+
                 <Button
                   color="inherit"
-                  onClick={() => scrollToSection("success-stories")}
+                  onClick={() =>
+                    document
+                      .getElementById("success-stories")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
                 >
                   Success Stories
                 </Button>
+
                 {userState.isLoggedIn && (
-                  <Button
-                    color="inherit"
-                    onClick={() =>
-                      handleFeatureAccess("dashboard") &&
-                      scrollToSection("dashboard")
-                    }
-                    startIcon={<DashboardIcon />}
-                  >
-                    Dashboard
-                  </Button>
+                  <>
+                    <Button
+                      color="inherit"
+                      component={Link}
+                      to="/dashboard"
+                      sx={{
+                        fontWeight:
+                          location.pathname === "/dashboard"
+                            ? "bold"
+                            : "normal",
+                      }}
+                      startIcon={<DashboardIcon />}
+                    >
+                      Dashboard
+                    </Button>
+
+                    <Button
+                      color="inherit"
+                      component={Link}
+                      to="/cv-review"
+                      sx={{
+                        fontWeight:
+                          location.pathname === "/cv-review"
+                            ? "bold"
+                            : "normal",
+                      }}
+                    >
+                      CV Review
+                    </Button>
+
+                    <Button
+                      color="inherit"
+                      component={Link}
+                      to="/aptitude-tests"
+                      sx={{
+                        fontWeight:
+                          location.pathname === "/aptitude-tests"
+                            ? "bold"
+                            : "normal",
+                      }}
+                    >
+                      Tests
+                    </Button>
+
+                    <Button
+                      color="inherit"
+                      component={Link}
+                      to="/mock-interviews"
+                      sx={{
+                        fontWeight:
+                          location.pathname === "/mock-interviews"
+                            ? "bold"
+                            : "normal",
+                      }}
+                    >
+                      Interviews
+                    </Button>
+                  </>
                 )}
+
                 {userState.userType === "admin" && (
                   <Button
                     color="inherit"
-                    onClick={() => scrollToSection("admin")}
+                    component={Link}
+                    to="/admin"
+                    sx={{
+                      fontWeight:
+                        location.pathname === "/admin" ? "bold" : "normal",
+                    }}
                     startIcon={<AdminIcon />}
                   >
-                    Admin Panel
+                    Admin
                   </Button>
                 )}
               </Box>
@@ -234,20 +310,50 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
         <MenuItem onClick={() => scrollToSection("success-stories")}>
           Success Stories
         </MenuItem>
+
         {userState.isLoggedIn && (
-          <MenuItem
-            onClick={() =>
-              handleFeatureAccess("dashboard") && scrollToSection("dashboard")
-            }
-          >
-            Dashboard
-          </MenuItem>
+          <>
+            <MenuItem
+              component={Link}
+              to="/dashboard"
+              onClick={handleMobileMenuClose}
+            >
+              Dashboard
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/cv-review"
+              onClick={handleMobileMenuClose}
+            >
+              CV Review
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/aptitude-tests"
+              onClick={handleMobileMenuClose}
+            >
+              Tests
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/mock-interviews"
+              onClick={handleMobileMenuClose}
+            >
+              Interviews
+            </MenuItem>
+          </>
         )}
+
         {userState.userType === "admin" && (
-          <MenuItem onClick={() => scrollToSection("admin")}>
+          <MenuItem
+            component={Link}
+            to="/admin"
+            onClick={handleMobileMenuClose}
+          >
             Admin Panel
           </MenuItem>
         )}
+
         {!userState.isLoggedIn ? (
           <>
             <MenuItem onClick={onLoginClick}>Login</MenuItem>

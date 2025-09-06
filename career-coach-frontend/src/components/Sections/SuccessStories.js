@@ -9,6 +9,7 @@ import {
   Avatar,
   Rating,
   Chip,
+  useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
@@ -22,6 +23,8 @@ const StoryCard = styled(Card)(({ theme }) => ({
 }));
 
 const SuccessStories = () => {
+  const theme = useTheme();
+
   const stories = [
     {
       initials: "AR",
@@ -31,7 +34,7 @@ const SuccessStories = () => {
         '"The voice-based emotion analysis during mock interviews helped me identify my nervousness patterns. After 3 weeks of practice, my confidence score improved from 45% to 82%!"',
       rating: 5,
       progress: "Career trajectory: Junior → Team Lead in 3 years",
-      color: "primary.main",
+      color: theme.palette.primary.main,
     },
     {
       initials: "SF",
@@ -41,7 +44,7 @@ const SuccessStories = () => {
         "\"The Bangladesh Bank exam simulation was spot-on! The AI converted my 'S.S.C.' to proper format and gave me 15 specific improvements for my CV.\"",
       rating: 5,
       progress: "Aptitude: 62% → 89% in 4 weeks",
-      color: "secondary.main",
+      color: theme.palette.secondary.main,
     },
     {
       initials: "MH",
@@ -51,7 +54,7 @@ const SuccessStories = () => {
         '"Skill gap analysis showed I needed Docker & Jenkins. The personalized roadmap with JS Bangla tutorials got me job-ready in 2 months!"',
       rating: 5,
       progress: "Technical skills: 40% → 85%",
-      color: "purple.600",
+      color: theme.palette.info.main,
     },
   ];
 

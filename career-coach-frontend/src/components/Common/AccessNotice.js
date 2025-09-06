@@ -12,7 +12,11 @@ const AccessNotice = () => {
           sx={{
             bgcolor: "transparent",
             color: "warning.dark",
-            "& .MuiAlert-message": { width: "100%" },
+            py: 0,
+            "& .MuiAlert-message": {
+              width: "100%",
+              padding: "8px 0",
+            },
           }}
         >
           <strong>Limited Access:</strong> You're browsing as an anonymous user.

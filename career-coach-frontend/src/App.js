@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Common/Navbar";
 import Home from "./components/Sections/Home";
 import Features from "./components/Sections/Features";
 import SuccessStories from "./components/Sections/SuccessStories";
-import Dashboard from "./components/Sections/DashBoard";
+import Dashboard from "./components/DashBoard.js";
+import CVReview from "./components/CVReview.js";
+import AptitudeTests from "./components/AptitudeTests";
+import MockInterviews from "./components/MockInterviews";
 import AdminPanel from "./components/Sections/AdminPanel";
 import LoginModal from "./components/Modals/LoginModal";
 import RegisterModal from "./components/Modals/RegisterModal";
@@ -15,6 +18,7 @@ import AccessNotice from "./components/Common/AccessNotice";
 import Footer from "./components/Common/Footer";
 import { getCurrentUser } from "./utils/auth";
 import { AuthProvider } from "./components/context/AuthContext";
+import ProtectedRoute from "./components/Common/ProtectedRoute";
 
 const theme = createTheme({
   palette: {
@@ -86,7 +90,6 @@ function App() {
   const [registerModalOpen, setRegisterModalOpen] = useState(false);
 
   useEffect(() => {
-    // Check if user is already logged in
     const user = getCurrentUser();
     if (user) {
       setUserState({
@@ -144,24 +147,70 @@ function App() {
 
             {!userState.isLoggedIn && <AccessNotice />}
 
-            <Home
-              userState={userState}
-              onGetStartedClick={() => {
-                if (!userState.isLoggedIn) {
-                  setRegisterModalOpen(true);
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <>
+                    <Home
+                      userState={userState}
+                      onGetStartedClick={() => {
+                        if (!userState.isLoggedIn) {
+                          setRegisterModalOpen(true);
+                        }
+                      }}
+                    />
+                    <Features userState={userState} />
+                    <SuccessStories />
+                  </>
                 }
-              }}
-            />
+              />
 
-            <Features userState={userState} />
-            <SuccessStories />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
 
-            {userState.isLoggedIn && (
-              <>
-                <Dashboard userState={userState} />
-                {userState.userType === "admin" && <AdminPanel />}
-              </>
-            )}
+              <Route
+                path="/cv-review"
+                element={
+                  <ProtectedRoute>
+                    <CVReview />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/aptitude-tests"
+                element={
+                  <ProtectedRoute>
+                    <AptitudeTests />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/mock-interviews"
+                element={
+                  <ProtectedRoute>
+                    <MockInterviews />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute requireAdmin>
+                    <AdminPanel />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
 
             <LoginModal
               open={loginModalOpen}

@@ -19,6 +19,7 @@ import {
   Notifications as NotificationsIcon,
   Dashboard as DashboardIcon,
   AdminPanelSettings as AdminIcon,
+  Person as PersonIcon, // Add this import
 } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { Link, useLocation } from "react-router-dom";
@@ -40,6 +41,7 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
 
   const [mobileMenuAnchor, setMobileMenuAnchor] = useState(null);
   const [notificationAnchor, setNotificationAnchor] = useState(null);
+  const [profileMenuAnchor, setProfileMenuAnchor] = useState(null); // Add this state
 
   const handleMobileMenuOpen = (event) => {
     setMobileMenuAnchor(event.currentTarget);
@@ -55,6 +57,14 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
 
   const handleNotificationClose = () => {
     setNotificationAnchor(null);
+  };
+
+  const handleProfileMenuOpen = (event) => {
+    setProfileMenuAnchor(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setProfileMenuAnchor(null);
   };
 
   const scrollToSection = (sectionId) => {
@@ -126,28 +136,6 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
                   }}
                 >
                   Home
-                </Button>
-
-                <Button
-                  color="inherit"
-                  onClick={() =>
-                    document
-                      .getElementById("features")
-                      ?.scrollIntoView({ behavior: "smooth" })
-                  }
-                >
-                  Features
-                </Button>
-
-                <Button
-                  color="inherit"
-                  onClick={() =>
-                    document
-                      .getElementById("success-stories")
-                      ?.scrollIntoView({ behavior: "smooth" })
-                  }
-                >
-                  Success Stories
                 </Button>
 
                 {userState.isLoggedIn && (
@@ -239,11 +227,13 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
 
                 {userState.isLoggedIn ? (
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Avatar
-                      sx={{ width: 32, height: 32, bgcolor: "primary.main" }}
-                    >
-                      {userState.userName?.charAt(0)?.toUpperCase()}
-                    </Avatar>
+                    <IconButton onClick={handleProfileMenuOpen} sx={{ p: 0 }}>
+                      <Avatar
+                        sx={{ width: 32, height: 32, bgcolor: "primary.main" }}
+                      >
+                        {userState.userName?.charAt(0)?.toUpperCase()}
+                      </Avatar>
+                    </IconButton>
                     <Typography
                       variant="body2"
                       sx={{ display: { xs: "none", sm: "block" } }}
@@ -297,6 +287,25 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
         </AppBar>
       </HideOnScroll>
 
+      {/* Profile Menu */}
+      <Menu
+        anchorEl={profileMenuAnchor}
+        open={Boolean(profileMenuAnchor)}
+        onClose={handleProfileMenuClose}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        <MenuItem
+          component={Link}
+          to="/profile"
+          onClick={handleProfileMenuClose}
+        >
+          <PersonIcon sx={{ mr: 1 }} />
+          My Profile
+        </MenuItem>
+        <MenuItem onClick={onLogoutClick}>Logout</MenuItem>
+      </Menu>
+
       {/* Mobile Menu */}
       <Menu
         anchorEl={mobileMenuAnchor}
@@ -340,6 +349,13 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
               onClick={handleMobileMenuClose}
             >
               Interviews
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/profile"
+              onClick={handleMobileMenuClose}
+            >
+              My Profile
             </MenuItem>
           </>
         )}

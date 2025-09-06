@@ -8,7 +8,7 @@ import Home from "./components/Sections/Home";
 import Features from "./components/Sections/Features";
 import SuccessStories from "./components/Sections/SuccessStories";
 import Dashboard from "./components/DashBoard.js";
-import CVReview from "./components/CVReview.js";
+import CVReview from "./pages/CVReviewPage.jsx";
 import AptitudeTests from "./components/AptitudeTests";
 import MockInterviews from "./components/MockInterviews";
 import AdminPanel from "./components/Sections/AdminPanel";
@@ -19,6 +19,7 @@ import Footer from "./components/Common/Footer";
 import { getCurrentUser } from "./utils/auth";
 import { AuthProvider } from "./components/context/AuthContext";
 import ProtectedRoute from "./components/Common/ProtectedRoute";
+import ProfilePage from "./pages/ProfilePage"; // Add this import
 
 const theme = createTheme({
   palette: {
@@ -207,6 +208,16 @@ function App() {
                 element={
                   <ProtectedRoute requireAdmin>
                     <AdminPanel />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Add Profile Route */}
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
                   </ProtectedRoute>
                 }
               />

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -43,6 +43,27 @@ export const authAPI = {
   login: (credentials) => api.post("/auth/login", credentials),
 };
 
+// User Data API
+export const userAPI = {
+  getProfile: () => api.get("/user/profile"),
+  updateProfile: (userData) => api.put("/user/profile", userData),
+  getProgress: () => api.get("/user/progress"),
+  uploadProfilePicture: (formData) =>
+    api.post("/user/upload-profile-picture", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+  saveTestResult: (result) => api.post("/user/test-results", result),
+  getTestHistory: () => api.get("/user/test-history"),
+  uploadCV: (formData) =>
+    api.post("/user/upload-cv", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+};
+
 // Gemini AI API
 export const geminiAPI = {
   analyzeCV: (cvText, jobRole) => {
@@ -63,27 +84,6 @@ export const geminiAPI = {
   generateRoadmap: (skillGaps, timeframe) => {
     return api.post("/ai/learning-roadmap", { skillGaps, timeframe });
   },
-};
-
-// User Data API
-export const userAPI = {
-  getProfile: () => api.get("/user/profile"),
-  updateProfile: (userData) => api.put("/user/profile", userData),
-  getProgress: () => api.get("/user/progress"),
-  uploadProfilePicture: (formData) =>
-    api.post("/user/upload-profile-picture", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }),
-  saveTestResult: (result) => api.post("/user/test-results", result),
-  getTestHistory: () => api.get("/user/test-history"),
-  uploadCV: (formData) =>
-    api.post("/user/upload-cv", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }),
 };
 
 // Admin API

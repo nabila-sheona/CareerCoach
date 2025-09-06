@@ -22,7 +22,7 @@ function useProvideAuth() {
   // Load persisted auth state
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('jwtToken');
+    const storedToken = localStorage.getItem('token');
 
     if (storedUser && storedToken) {
       try {
@@ -55,7 +55,7 @@ function useProvideAuth() {
         setUser(userData);
         setToken(token);
         localStorage.setItem('user', JSON.stringify(userData));
-        localStorage.setItem('jwtToken', token);
+        localStorage.setItem('token', token);
 
         return { success: true, message };
       }
@@ -73,7 +73,7 @@ function useProvideAuth() {
     setUser(null);
     setToken(null);
     localStorage.removeItem('user');
-    localStorage.removeItem('jwtToken');
+    localStorage.removeItem('token');
   };
 
   return {

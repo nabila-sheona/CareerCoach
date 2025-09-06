@@ -164,7 +164,18 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
                 {userState.isLoggedIn ? (
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Avatar
-                      sx={{ width: 32, height: 32, bgcolor: "primary.main" }}
+                      sx={{ 
+                        width: 40, 
+                        height: 40, 
+                        bgcolor: "primary.main",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease-in-out",
+                        "&:hover": {
+                          transform: "scale(1.05)",
+                          boxShadow: 3
+                        }
+                      }}
+                      onClick={() => scrollToSection("profile")}
                     >
                       {userState.userName?.charAt(0)?.toUpperCase()}
                     </Avatar>
@@ -241,6 +252,11 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
             }
           >
             Dashboard
+          </MenuItem>
+        )}
+        {userState.isLoggedIn && (
+          <MenuItem onClick={() => scrollToSection("profile")}>
+            Profile
           </MenuItem>
         )}
         {userState.userType === "admin" && (

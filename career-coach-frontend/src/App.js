@@ -9,6 +9,7 @@ import Features from "./components/Sections/Features";
 import SuccessStories from "./components/Sections/SuccessStories";
 import Dashboard from "./components/Sections/Dashboard";
 import AdminPanel from "./components/Sections/AdminPanel";
+import Profile from "./components/Sections/Profile";
 import LoginModal from "./components/Modals/LoginModal";
 import RegisterModal from "./components/Modals/RegisterModal";
 import AccessNotice from "./components/Common/AccessNotice";
@@ -159,6 +160,7 @@ function App() {
             {userState.isLoggedIn && (
               <>
                 <Dashboard userState={userState} />
+                <Profile userState={userState} />
                 {userState.userType === "admin" && <AdminPanel />}
               </>
             )}

@@ -12,6 +12,7 @@ import FeaturesPage from './components/pages/FeaturesPage';
 import SuccessStoriesPage from './components/pages/SuccessStoriesPage';
 import DashboardPage from './components/pages/DashboardPage';
 import RegisterPage from './components/pages/RegisterPage';
+import ProfilePage from './components/pages/ProfilePage';
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/success-stories" element={<SuccessStoriesPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Routes>
         <Footer />
         {/* Add ToastContainer here */}

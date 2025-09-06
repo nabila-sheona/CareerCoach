@@ -1,9 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth'; // ✅ Import your auth hook
 
 const Navbar = () => {
   const { user, isAuthenticated } = useAuth(); // ✅ Destructure authentication state
+  const location = useLocation(); // Get current location for active link highlighting
 
   return (
     <header className="bg-white shadow-md">
@@ -19,10 +20,30 @@ const Navbar = () => {
 
           {/* Navigation */}
           <nav className="hidden md:flex space-x-8">
-            <Link to="/" className="text-blue-600 font-medium">Home</Link>
-            <Link to="/features" className="text-gray-600 hover:text-gray-900">Features</Link>
-            <Link to="/success-stories" className="text-gray-600 hover:text-gray-900">Success Stories</Link>
-            <Link to="/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</Link>
+            <Link 
+              to="/" 
+              className={location.pathname === '/' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-900'}
+            >
+              Home
+            </Link>
+            <Link 
+              to="/features" 
+              className={location.pathname === '/features' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-900'}
+            >
+              Features
+            </Link>
+            <Link 
+              to="/success-stories" 
+              className={location.pathname === '/success-stories' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-900'}
+            >
+              Success Stories
+            </Link>
+            <Link 
+              to="/dashboard" 
+              className={location.pathname === '/dashboard' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-900'}
+            >
+              Dashboard
+            </Link>
           </nav>
 
           {/* User Info & Buttons */}

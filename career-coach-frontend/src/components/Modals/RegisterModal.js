@@ -281,19 +281,9 @@ const RegisterModal = ({ open, onClose, onRegister, onSwitchToLogin }) => {
 
         {activeStep === 0 && (
           <>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<GoogleIcon />}
-              onClick={handleGoogleSignup}
-              sx={{ mb: 3 }}
-            >
-              Sign up with Google
-            </Button>
-
             <Divider sx={{ mb: 3 }}>
               <Typography variant="body2" color="text.secondary">
-                or sign up with email
+                sign up with email
               </Typography>
             </Divider>
           </>

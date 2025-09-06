@@ -93,19 +93,9 @@ const LoginModal = ({ open, onClose, onLogin, onSwitchToRegister }) => {
           </Alert>
         )}
 
-        <Button
-          fullWidth
-          variant="outlined"
-          startIcon={<GoogleIcon />}
-          onClick={handleGoogleLogin}
-          sx={{ mb: 3 }}
-        >
-          Continue with Google
-        </Button>
-
         <Divider sx={{ mb: 3 }}>
           <Typography variant="body2" color="text.secondary">
-            or continue with email
+            continue with email
           </Typography>
         </Divider>
 

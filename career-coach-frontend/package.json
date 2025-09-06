@@ -12,6 +12,7 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.11.0",
+    "firebase": "^12.2.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.8.2",
@@ -23,7 +24,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-   "build:prod": "npm run build && npm run compress",
+    "build:prod": "npm run build && npm run compress",
     "compress": "gzip -k -9 build/static/js/*.js && gzip -k -9 build/static/css/*.css",
     "serve": "serve -s build -l 3000"
   },

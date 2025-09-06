@@ -13,6 +13,7 @@ import SuccessStoriesPage from './components/pages/SuccessStoriesPage';
 import DashboardPage from './components/pages/DashboardPage';
 import RegisterPage from './components/pages/RegisterPage';
 import ProfilePage from './components/pages/ProfilePage';
+import CVReviewPage from './components/pages/CVReviewPage';
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/cv-review" element={<CVReviewPage />} />
         </Routes>
         <Footer />
         {/* Add ToastContainer here */}

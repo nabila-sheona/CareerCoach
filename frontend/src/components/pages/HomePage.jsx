@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from 'react-router-dom';
 import Navbar from "../shared/Navbar";
 
 const HomePage = () => {
@@ -81,9 +82,9 @@ const HomePage = () => {
                 Registered Users Only
               </div>
               <div>
-                <a href="#" className="text-blue-600 font-medium hover:text-blue-700">
+                <Link to="/cv-review" className="text-blue-600 font-medium hover:text-blue-700">
                   Try CV Review →
-                </a>
+                </Link>
               </div>
             </div>
 

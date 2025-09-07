@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { userAPI } from "./shared/api";
+import "./ProfilePage.css";
 
 import ProfilePictureUpload from "./shared/ProfilePictureUpload";
 import {

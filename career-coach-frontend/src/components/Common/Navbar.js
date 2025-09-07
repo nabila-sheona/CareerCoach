@@ -22,7 +22,7 @@ import {
 import {
   Menu as MenuIcon,
   Notifications as NotificationsIcon,
-  Dashboard as DashboardIcon,
+  EmojiEvents as SuccessStoriesIcon,
   AdminPanelSettings as AdminIcon,
   Person as PersonIcon,
   Settings as SettingsIcon,
@@ -234,7 +234,7 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
   const navigationItems = [
     { label: "Home", path: "/", icon: HomeIcon },
     ...(userState.isLoggedIn ? [
-      { label: "Dashboard", path: "/dashboard", icon: DashboardIcon },
+      { label: "Success Stories", path: "/success-stories-page", icon: SuccessStoriesIcon },
       { label: "CV Review", path: "/cv-review", icon: CVIcon },
       { label: "Tests", path: "/aptitude-tests", icon: TestIcon },
       { label: "Interviews", path: "/mock-interviews", icon: InterviewIcon },

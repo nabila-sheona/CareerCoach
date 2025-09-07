@@ -37,6 +37,8 @@ const StatsSection = styled(Box)(({ theme }) => ({
   },
 }));
 
+
+
 const StatCard = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4, 3),
   textAlign: "center",
@@ -93,6 +95,7 @@ const ButtonGroup = styled(Box)(({ theme }) => ({
 
 const Home = ({ userState, onGetStartedClick }) => {
   const theme = useTheme();
+
 
   const statsData = [
     {
@@ -305,6 +308,8 @@ const Home = ({ userState, onGetStartedClick }) => {
           </Box>
         </Container>
       </StatsSection>
+
+
     </>
   );
 };

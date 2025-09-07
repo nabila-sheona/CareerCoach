@@ -6,8 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Common/Navbar";
 import Home from "./components/Sections/Home";
 import Features from "./components/Sections/Features";
-import SuccessStories from "./components/Sections/SuccessStories";
-import Dashboard from "./components/DashBoard.js";
+import SuccessStoriesPage from "./components/SuccessStoriesPage.js";
 import CVReview from "./pages/CVReviewPage.jsx";
 import AptitudeTests from "./components/AptitudeTests";
 import MockInterviews from "./components/MockInterviews";
@@ -162,16 +161,16 @@ function App() {
                       }}
                     />
                     <Features userState={userState} />
-                    <SuccessStories />
+                    <SuccessStoriesPage />
                   </>
                 }
               />
 
               <Route
-                path="/dashboard"
+                path="/success-stories-page"
                 element={
                   <ProtectedRoute>
-                    <Dashboard />
+                    <SuccessStoriesPage />
                   </ProtectedRoute>
                 }
               />

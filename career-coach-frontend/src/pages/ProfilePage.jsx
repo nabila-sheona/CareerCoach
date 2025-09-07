@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { userAPI } from "./shared/api";
-import "./ProfilePage.css";
 
 import ProfilePictureUpload from "./shared/ProfilePictureUpload";
 import {
@@ -356,6 +355,8 @@ const ProfilePage = () => {
     );
   }
 
+
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -471,7 +472,8 @@ const ProfilePage = () => {
           </div>
 
           <div className="p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Profile Picture and Basic Information Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
               {/* Profile Picture Section */}
               <div className="lg:col-span-1">
                 <div className="flex flex-col items-center">
@@ -482,13 +484,13 @@ const ProfilePage = () => {
                     editable={isEditing}
                   />
                   <h2 className="mt-4 text-xl font-semibold text-gray-900">
-                    {profile.name || "Your Name"}
+                    {profile.name || "Add Your Name"}
                   </h2>
                   <p className="text-gray-600">
-                    {profile.jobTitle || "Job Title"}
+                    {profile.jobTitle || "Add Job Title"}
                   </p>
                   <p className="text-gray-500">
-                    {profile.company || "Company"}
+                    {profile.company || "Add Company"}
                   </p>
                 </div>
               </div>
@@ -597,9 +599,10 @@ const ProfilePage = () => {
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Professional Information */}
-            <div className="mt-8">
+          {/* Professional Information */}
+          <div className="p-6 pt-0">
               <h3 className="text-lg font-medium text-gray-900 mb-4">
                 Professional Information
               </h3>
@@ -726,9 +729,9 @@ const ProfilePage = () => {
               </div>
             </div>
 
-            {/* Skills Section */}
-            <div className="mt-8">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Skills</h3>
+              {/* Skills Section */}
+              <div className="mt-8">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Skills</h3>
               <div className="flex flex-wrap gap-2 mb-4">
                 {profile.skills?.map((skill, index) => (
                   <span
@@ -765,13 +768,13 @@ const ProfilePage = () => {
                   </button>
                 </div>
               )}
-            </div>
+              </div>
 
-            {/* Certifications Section */}
-            <div className="mt-8">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                Certifications
-              </h3>
+              {/* Certifications Section */}
+              <div className="mt-8">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  Certifications
+                </h3>
               <div className="flex flex-wrap gap-2 mb-4">
                 {profile.certifications?.map((cert, index) => (
                   <span
@@ -810,13 +813,13 @@ const ProfilePage = () => {
                   </button>
                 </div>
               )}
-            </div>
+              </div>
 
-            {/* Social Links */}
-            <div className="mt-8">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                Social Links
-              </h3>
+              {/* Social Links */}
+              <div className="mt-8">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  Social Links
+                </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -867,7 +870,6 @@ const ProfilePage = () => {
                       {errors.githubUrl}
                     </p>
                   )}
-                </div>
               </div>
             </div>
           </div>

@@ -32,6 +32,7 @@ import {
   Mic as InterviewIcon,
   Description as CVIcon,
   Close as CloseIcon,
+  NotificationsActive as NotificationsActiveIcon,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { useAuth } from "../context/AuthContext";
@@ -99,13 +100,42 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
   fontWeight: 600,
 }));
 
+// Enhanced NotificationBadge with better visibility
 const NotificationBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
     backgroundColor: theme.palette.error.main,
     color: theme.palette.error.contrastText,
     fontSize: "0.7rem",
-    minWidth: 18,
-    height: 18,
+    minWidth: 20,
+    height: 20,
+    border: `2px solid ${theme.palette.background.paper}`,
+    boxShadow: `0 2px 8px ${alpha(theme.palette.error.main, 0.5)}`,
+    animation: "pulse 2s infinite",
+    zIndex: 1,
+  },
+  "@keyframes pulse": {
+    "0%": {
+      transform: "scale(1)",
+    },
+    "50%": {
+      transform: "scale(1.1)",
+    },
+    "100%": {
+      transform: "scale(1)",
+    },
+  },
+}));
+
+// Updated notification icon button - removed background colors and glow effect
+const NotificationIconButton = styled(IconButton)(({ theme, hasNotifications }) => ({
+  position: "relative",
+  padding: theme.spacing(1.5),
+  borderRadius: theme.spacing(1.5),
+  color: hasNotifications ? theme.palette.primary.main : theme.palette.text.primary,
+  transition: "all 0.3s ease-in-out",
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.primary.main, 0.08),
+    transform: "scale(1.05)",
   },
 }));
 
@@ -113,7 +143,8 @@ const StyledMenu = styled(Menu)(({ theme }) => ({
   "& .MuiPaper-root": {
     borderRadius: theme.spacing(2),
     marginTop: theme.spacing(1),
-    minWidth: 220,
+    minWidth: 280, // Increased width for better notification display
+    maxWidth: 350,
     boxShadow: `0 8px 32px ${alpha(theme.palette.common.black, 0.12)}`,
     border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
     backdropFilter: "blur(20px)",
@@ -125,6 +156,20 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   borderRadius: theme.spacing(1),
   margin: theme.spacing(0.5, 1),
   transition: "all 0.2s ease-in-out",
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.primary.main, 0.08),
+  },
+}));
+
+// Enhanced notification menu item
+const NotificationMenuItem = styled(MenuItem)(({ theme, unread }) => ({
+  padding: theme.spacing(2),
+  borderRadius: theme.spacing(1),
+  margin: theme.spacing(0.5, 1),
+  position: "relative",
+  transition: "all 0.2s ease-in-out",
+  backgroundColor: unread ? alpha(theme.palette.primary.main, 0.05) : "transparent",
+  borderLeft: unread ? `3px solid ${theme.palette.primary.main}` : "3px solid transparent",
   "&:hover": {
     backgroundColor: alpha(theme.palette.primary.main, 0.08),
   },
@@ -162,6 +207,7 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
   };
 
   const handleNotificationOpen = (event) => {
+    event.preventDefault();
     setNotificationAnchor(event.currentTarget);
   };
 
@@ -200,21 +246,52 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
 
   const notifications = [
     {
+      id: 1,
       title: "Your CV analysis is ready",
+      description: "Your CV has been analyzed with detailed feedback and suggestions.",
       time: "2 hours ago",
       unread: true,
+      type: "cv",
     },
     {
+      id: 2,
       title: "New aptitude test available",
+      description: "A new logical reasoning test has been added to your dashboard.",
       time: "1 day ago",
       unread: true,
+      type: "test",
     },
     {
+      id: 3,
       title: "Interview practice reminder",
+      description: "Don't forget to practice your mock interview sessions.",
       time: "2 days ago",
       unread: false,
+      type: "interview",
+    },
+    {
+      id: 4,
+      title: "Profile completion",
+      description: "Complete your profile to get better job recommendations.",
+      time: "3 days ago",
+      unread: false,
+      type: "profile",
     },
   ];
+
+  const unreadCount = notifications.filter(n => n.unread).length;
+
+  const markAllAsRead = () => {
+    // This would typically update the notifications state/backend
+    console.log("Marking all notifications as read");
+    handleNotificationClose();
+  };
+
+  const handleNotificationClick = (notification) => {
+    // Handle individual notification click
+    console.log("Clicked notification:", notification);
+    handleNotificationClose();
+  };
 
   return (
     <>
@@ -293,20 +370,23 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
               {/* User Actions */}
               <UserSection>
                 {userState.isLoggedIn && (
-                  <IconButton 
-                    color="inherit" 
+                  <NotificationIconButton
                     onClick={handleNotificationOpen}
-                    sx={{ 
-                      p: 1.5,
-                      "&:hover": {
-                        backgroundColor: alpha(theme.palette.primary.main, 0.08),
-                      }
-                    }}
+                    hasNotifications={unreadCount > 0}
+                    aria-label={`${unreadCount} unread notifications`}
                   >
-                    <NotificationBadge badgeContent={notifications.filter(n => n.unread).length} color="error">
-                      <NotificationsIcon />
+                    <NotificationBadge 
+                      badgeContent={unreadCount} 
+                      color="error"
+                      invisible={unreadCount === 0}
+                    >
+                      {unreadCount > 0 ? (
+                        <NotificationsActiveIcon sx={{ fontSize: "1.3rem" }} />
+                      ) : (
+                        <NotificationsIcon sx={{ fontSize: "1.3rem" }} />
+                      )}
                     </NotificationBadge>
-                  </IconButton>
+                  </NotificationIconButton>
                 )}
 
                 {userState.isLoggedIn ? (
@@ -491,63 +571,127 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
         )}
       </StyledMenu>
 
-      {/* Notifications Menu */}
+      {/* Enhanced Notifications Menu */}
       <StyledMenu
         anchorEl={notificationAnchor}
         open={Boolean(notificationAnchor)}
         onClose={handleNotificationClose}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        PaperProps={{
+          style: { maxHeight: 400, overflow: 'auto' }
+        }}
       >
-        <Box sx={{ px: 2, py: 1.5 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            Notifications
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            {notifications.filter(n => n.unread).length} unread
-          </Typography>
+        {/* Notification Header */}
+        <Box sx={{ 
+          px: 2, 
+          py: 1.5, 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "space-between",
+          borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`
+        }}>
+          <Box>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+              Notifications
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {unreadCount > 0 ? `${unreadCount} unread` : "All caught up!"}
+            </Typography>
+          </Box>
+          {unreadCount > 0 && (
+            <Button
+              size="small"
+              onClick={markAllAsRead}
+              sx={{ 
+                fontSize: "0.7rem", 
+                minWidth: "auto",
+                px: 1,
+                py: 0.5,
+                textTransform: "none"
+              }}
+            >
+              Mark all read
+            </Button>
+          )}
         </Box>
-        <Divider sx={{ mx: 1 }} />
         
-        {notifications.map((notification, index) => (
-          <StyledMenuItem key={index} onClick={handleNotificationClose}>
-            <Box sx={{ flexGrow: 1 }}>
-              <Typography 
-                variant="body2" 
-                sx={{ 
-                  fontWeight: notification.unread ? 600 : 400,
-                  mb: 0.5 
-                }}
-              >
-                {notification.title}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {notification.time}
-              </Typography>
-              {notification.unread && (
-                <Box
-                  sx={{
-                    width: 8,
-                    height: 8,
-                    backgroundColor: "primary.main",
-                    borderRadius: "50%",
-                    position: "absolute",
-                    right: 16,
-                    top: "50%",
-                    transform: "translateY(-50%)",
+        {/* Notifications List */}
+        {notifications.length > 0 ? (
+          notifications.map((notification) => (
+            <NotificationMenuItem 
+              key={notification.id} 
+              unread={notification.unread}
+              onClick={() => handleNotificationClick(notification)}
+            >
+              <Box sx={{ width: "100%", pr: 1 }}>
+                <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", mb: 0.5 }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      fontWeight: notification.unread ? 600 : 400,
+                      color: notification.unread ? "text.primary" : "text.secondary",
+                      pr: 1,
+                      lineHeight: 1.3
+                    }}
+                  >
+                    {notification.title}
+                  </Typography>
+                  {notification.unread && (
+                    <Box
+                      sx={{
+                        width: 8,
+                        height: 8,
+                        backgroundColor: "primary.main",
+                        borderRadius: "50%",
+                        flexShrink: 0,
+                        mt: 0.5
+                      }}
+                    />
+                  )}
+                </Box>
+                <Typography 
+                  variant="caption" 
+                  sx={{ 
+                    color: "text.secondary", 
+                    display: "block",
+                    mb: 0.5,
+                    lineHeight: 1.3
                   }}
-                />
-              )}
-            </Box>
-          </StyledMenuItem>
-        ))}
+                >
+                  {notification.description}
+                </Typography>
+                <Typography 
+                  variant="caption" 
+                  sx={{ 
+                    color: "text.disabled",
+                    fontSize: "0.7rem"
+                  }}
+                >
+                  {notification.time}
+                </Typography>
+              </Box>
+            </NotificationMenuItem>
+          ))
+        ) : (
+          <Box sx={{ p: 3, textAlign: "center" }}>
+            <NotificationsIcon sx={{ fontSize: 48, color: "text.disabled", mb: 1 }} />
+            <Typography variant="body2" color="text.secondary">
+              No notifications yet
+            </Typography>
+          </Box>
+        )}
         
-        <Divider sx={{ mx: 1, my: 1 }} />
-        <StyledMenuItem sx={{ justifyContent: "center" }}>
-          <Typography variant="body2" color="primary.main" sx={{ fontWeight: 600 }}>
-            View All Notifications
-          </Typography>
-        </StyledMenuItem>
+        {notifications.length > 0 && (
+          <>
+            <Divider sx={{ mx: 1, my: 1 }} />
+            <StyledMenuItem sx={{ justifyContent: "center", py: 1.5 }}>
+              <Typography variant="body2" color="primary.main" sx={{ fontWeight: 600 }}>
+                View All Notifications
+              </Typography>
+            </StyledMenuItem>
+          </>
+        )}
       </StyledMenu>
     </>
   );

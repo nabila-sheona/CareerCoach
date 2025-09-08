@@ -15,13 +15,25 @@ const DashboardPage = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const user = JSON.parse(localStorage.getItem('user'));
-      const userId = user?.id || 'user123'; // Fallback to user123 for demo purposes
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      let userId = user?.id;
+      
+      // Temporary: Use test user ID if no user found
+      if (!userId) {
+        userId = '507f1f77bcf86cd799439011';
+      }
+      
       const response = await cvReviewAPI.getDashboardData(userId);
       setDashboardData(response.data);
     } catch (err) {
-      setError('Failed to load dashboard data');
       console.error('Dashboard data fetch error:', err);
+      if (err.response?.status === 404) {
+        setError('No CV review data found. Please upload and review your CV first.');
+      } else if (err.response?.status === 401) {
+        setError('Authentication failed. Please log in again.');
+      } else {
+        setError('Failed to load dashboard data. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }
@@ -59,8 +71,65 @@ const DashboardPage = () => {
     return (
       <div className="min-h-screen bg-gray-100 py-10 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            {error}
+          <div className="bg-white shadow-md rounded-lg p-8 text-center">
+            <div className="mb-4">
+              <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Dashboard Data Unavailable</h3>
+            <p className="text-gray-600 mb-6">{error}</p>
+            {error.includes('No CV review data found') && (
+              <div className="space-y-3">
+                <a 
+                  href="/cv-review" 
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Upload & Review CV
+                </a>
+                <p className="text-sm text-gray-500">Get started by uploading your CV for analysis</p>
+              </div>
+            )}
+            {error.includes('log in') && (
+              <button 
+                onClick={() => window.location.reload()} 
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Refresh Page
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if dashboard data exists but has no reviews
+  if (dashboardData && dashboardData.totalReviews === 0) {
+    return (
+    <div className="min-h-screen bg-gray-100 py-10 px-6">
+      <div className="max-w-7xl mx-auto">
+
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">
+             CV Review Dashboard
+           </h1>
+          <div className="bg-white shadow-md rounded-lg p-8 text-center">
+            <div className="mb-4">
+              <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No CV Reviews Yet</h3>
+            <p className="text-gray-600 mb-6">You haven't uploaded any CVs for review yet. Get started by uploading your CV to receive personalized feedback and insights.</p>
+            <div className="space-y-3">
+              <a 
+                href="/cv-review" 
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Upload Your First CV
+              </a>
+              <p className="text-sm text-gray-500">Start your career improvement journey today</p>
+            </div>
           </div>
         </div>
       </div>
@@ -70,10 +139,9 @@ const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-6">
       <div className="max-w-7xl mx-auto">
-        {/* Page Heading */}
         <h1 className="text-3xl font-bold text-gray-800 mb-6">
-          CV Review Dashboard
-        </h1>
+             CV Review Dashboard
+           </h1>
 
         {/* CV Review Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

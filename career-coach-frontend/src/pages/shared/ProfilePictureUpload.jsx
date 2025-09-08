@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { userAPI } from "./api";
+import { userAPI } from "../../services/api";
 import { getFullImageUrl } from "../../utils/imageUtils";
 
 const ProfilePictureUpload = ({
@@ -13,6 +13,7 @@ const ProfilePictureUpload = ({
   const [error, setError] = useState("");
   const [showPreviewDialog, setShowPreviewDialog] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [imageLoadError, setImageLoadError] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleFileSelect = (event) => {
@@ -115,6 +116,19 @@ const ProfilePictureUpload = ({
     setError("");
   };
 
+  const handleImageError = () => {
+    setImageLoadError(true);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoadError(false);
+  };
+
+  // Reset image error when currentImage changes
+  React.useEffect(() => {
+    setImageLoadError(false);
+  }, [currentImage]);
+
   return (
     <div className="flex flex-col items-center gap-4">
       {/* Profile Picture Display */}
@@ -123,11 +137,13 @@ const ProfilePictureUpload = ({
           className={`rounded-full border-4 border-blue-500 shadow-lg overflow-hidden bg-gray-100 flex items-center justify-center`}
           style={{ width: size, height: size }}
         >
-          {currentImage ? (
+          {currentImage && !imageLoadError ? (
             <img
               src={getFullImageUrl(currentImage)}
               alt="Profile"
               className="w-full h-full object-cover"
+              onError={handleImageError}
+              onLoad={handleImageLoad}
             />
           ) : (
             <svg

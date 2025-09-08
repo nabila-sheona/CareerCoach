@@ -91,11 +91,13 @@ const RegisterModal = ({ open, onClose, onRegister, onSwitchToLogin }) => {
 
       if (response.data.success) {
         setAuthData(response.data.token, {
+          id: response.data.user?.id,
           email: formData.email,
           name: formData.name,
         });
 
         onRegister({
+          id: response.data.user?.id,
           email: formData.email,
           name: formData.name,
         });

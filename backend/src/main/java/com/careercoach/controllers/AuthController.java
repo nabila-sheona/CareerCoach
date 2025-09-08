@@ -77,6 +77,7 @@ public class AuthController {
             response.put("success", true);
             response.put("token", token);
             response.put("user", Map.of(
+                    "id", savedUser.getId(),
                     "email", savedUser.getEmail(),
                     "name", savedUser.getName()
             ));
@@ -131,6 +132,7 @@ public class AuthController {
             response.put("success", true);
             response.put("token", token);
             response.put("user", Map.of(
+                    "id", user.getId(),
                     "email", user.getEmail(),
                     "name", user.getName()
             ));

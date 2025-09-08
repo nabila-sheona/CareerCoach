@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Test User</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #1565c0;
+        }
+        .success {
+            color: #4caf50;
+            margin-top: 10px;
+        }
+        .info {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CareerCoach Test User Setup</h1>
+        <div class="info">
+            <p><strong>Purpose:</strong> This page helps set up a test user in localStorage to test the dashboard functionality.</p>
+            <p><strong>Test User Details:</strong></p>
+            <ul>
+                <li>ID: user123</li>
+                <li>Name: Test User</li>
+                <li>Email: test@example.com</li>
+            </ul>
+        </div>
+        
+        <button onclick="setupTestUser()">Setup Test User</button>
+        <button onclick="clearUserData()">Clear User Data</button>
+        <button onclick="checkCurrentUser()">Check Current User</button>
+        <button onclick="goToDashboard()">Go to Dashboard</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function setupTestUser() {
+            const testUser = {
+                id: '507f1f77bcf86cd799439011',
+                name: 'Test User',
+                email: 'test@example.com'
+            };
+            
+            const testToken = 'test-jwt-token-123';
+            
+            localStorage.setItem('user', JSON.stringify(testUser));
+            localStorage.setItem('token', testToken);
+            
+            document.getElementById('result').innerHTML = 
+                '<div class="success">✅ Test user and token set up successfully!</div>';
+            
+            console.log('Test user set up in localStorage:', testUser);
+            console.log('Test token set up in localStorage:', testToken);
+        }
+        
+        function clearUserData() {
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            
+            document.getElementById('result').innerHTML = 
+                '<div class="success">✅ User data cleared from localStorage</div>';
+        }
+        
+        function checkCurrentUser() {
+            const user = localStorage.getItem('user');
+            const token = localStorage.getItem('token');
+            
+            if (user && token) {
+                const userData = JSON.parse(user);
+                document.getElementById('result').innerHTML = 
+                    `<div class="success">✅ Current user: ${userData.name} (${userData.email}) - ID: ${userData.id}</div>`;
+            } else {
+                document.getElementById('result').innerHTML = 
+                    '<div style="color: #f44336;">❌ No user data found in localStorage</div>';
+            }
+        }
+        
+        function goToDashboard() {
+            window.location.href = '/dashboard';
+        }
+        
+        // Check user status on page load
+        window.onload = function() {
+            checkCurrentUser();
+        };
+    </script>
+</body>
+</html>

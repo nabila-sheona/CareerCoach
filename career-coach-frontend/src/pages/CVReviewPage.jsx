@@ -38,7 +38,7 @@ import {
 import { styled } from "@mui/material/styles";
 import fileParsingService from "../services/fileParsingService";
 import geminiService from "../services/geminiService";
-import { cvReviewAPI } from "./shared/api";
+import { cvReviewAPI } from "../services/api";
 
 const StyledUploadArea = styled(Paper)(({ theme }) => ({
   border: `2px dashed ${theme.palette.primary.main}`,
@@ -168,11 +168,14 @@ const CVReviewPage = () => {
 
     setIsSaving(true);
     try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const userId = user?.id || '507f1f77bcf86cd799439011'; // Use test user ID as fallback
+      
       const cvReviewData = {
-        userId: JSON.parse(localStorage.getItem('user'))?.id || 'user123', // Get from auth context or fallback
+        userId,
         jobDescription,
-        cvFileName: uploadedFile?.name,
-        cvFilePath: uploadedFile?.name, // In real app, this would be the stored file path
+        cvFileName: uploadedFile?.name || 'test-cv.pdf',
+        cvFilePath: uploadedFile?.name || 'test-cv.pdf',
         overallMatch: {
           score: analysisResult.overallMatch?.score || 0,
           summary: analysisResult.overallMatch?.summary || ''
@@ -200,12 +203,15 @@ const CVReviewPage = () => {
         status: 'COMPLETED'
       };
 
-      await cvReviewAPI.saveCVReview(cvReviewData);
+      const response = await cvReviewAPI.saveCVReview(cvReviewData);
       toast.success('CV Review saved successfully!');
+      
+      // Navigate to home page after successful save
       navigate('/');
     } catch (error) {
       console.error('Error saving CV review:', error);
-      toast.error('Failed to save CV review. Please try again.');
+      const errorMessage = error.response?.data?.message || error.message || 'Unknown error occurred';
+      toast.error(`Failed to save CV review: ${errorMessage}`);
     } finally {
       setIsSaving(false);
     }

@@ -38,6 +38,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { useAuth } from "../context/AuthContext";
 import { Link, useLocation } from "react-router-dom";
+import { getFullImageUrl } from "../../utils/imageUtils";
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: alpha(theme.palette.background.paper, 0.95),
@@ -192,8 +193,21 @@ function HideOnScroll(props) {
 
 const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
   const { userState } = useAuth();
+  
+  // Debug logging for profile picture
+  React.useEffect(() => {
+    console.log('=== NAVBAR PROFILE PICTURE DEBUG ===');
+    console.log('UserState:', userState);
+    console.log('Profile picture URL (raw):', userState?.profilePicture);
+    console.log('Profile picture URL (full):', getFullImageUrl(userState?.profilePicture));
+    console.log('Profile picture exists:', !!userState?.profilePicture);
+    console.log('====================================');
+  }, [userState?.profilePicture]);
+  
   const location = useLocation();
   const theme = useTheme();
+  
+
 
   const [mobileMenuAnchor, setMobileMenuAnchor] = useState(null);
   const [notificationAnchor, setNotificationAnchor] = useState(null);
@@ -401,18 +415,22 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
                         {userState.userType === "admin" ? "Administrator" : "Member"}
                       </Typography>
                     </Box>
-                    <IconButton 
-                      onClick={handleProfileMenuOpen} 
-                      sx={{ 
-                        p: 0.5,
+                    <IconButton
+                      onClick={handleProfileMenuOpen}
+                      sx={{
+                        p: 0,
+                        transition: "all 0.2s ease-in-out",
                         "&:hover": {
                           backgroundColor: "transparent",
                           transform: "scale(1.05)",
                         }
                       }}
                     >
-                      <StyledAvatar>
-                        {userState.userName?.charAt(0)?.toUpperCase()}
+                      <StyledAvatar
+                        src={getFullImageUrl(userState.profilePicture)}
+                        alt={userState.userName}
+                      >
+                        {!userState.profilePicture && userState.userName?.charAt(0)?.toUpperCase()}
                       </StyledAvatar>
                     </IconButton>
                   </Box>

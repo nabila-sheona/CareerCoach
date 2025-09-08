@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { userAPI } from "./shared/api";
+import { userAPI } from "../services/api";
 
 import ProfilePictureUpload from "./shared/ProfilePictureUpload";
 import {
@@ -20,7 +20,7 @@ import {
   validateSkills,
 } from "../utils/profileValidation";
 
-const ProfilePage = () => {
+const ProfilePage = ({ onProfilePictureUpdate }) => {
   const [profile, setProfile] = useState({
     name: "",
     email: "",
@@ -341,6 +341,11 @@ const ProfilePage = () => {
     setProfile(updatedProfile);
     setSuccess("Profile picture updated successfully!");
     setTimeout(() => setSuccess(""), 3000);
+
+    // Update global user state in App.js
+    if (onProfilePictureUpdate) {
+      onProfilePictureUpdate(imageUrl);
+    }
 
     // Dynamically update profile completion
     const newProgress = calculateProfileCompletion(updatedProfile);

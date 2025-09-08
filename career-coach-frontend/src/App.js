@@ -17,6 +17,7 @@ import RegisterModal from "./components/Modals/RegisterModal";
 import AccessNotice from "./components/Common/AccessNotice";
 import Footer from "./components/Common/Footer";
 import { getCurrentUser } from "./utils/auth";
+import { userAPI } from "./services/api";
 import { AuthProvider } from "./components/context/AuthContext";
 import ProtectedRoute from "./components/Common/ProtectedRoute";
 import ProfilePage from "./pages/ProfilePage"; // Add this import
@@ -86,6 +87,7 @@ function App() {
     userType: "anonymous",
     userName: "",
     userEmail: "",
+    profilePicture: "",
   });
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [registerModalOpen, setRegisterModalOpen] = useState(false);
@@ -98,18 +100,76 @@ function App() {
         userType: user.isAdmin ? "admin" : "registered",
         userName: user.name || user.email,
         userEmail: user.email,
+        profilePicture: user.profilePicture || "",
       });
+      // Fetch latest profile data to get profile picture
+      fetchUserProfile();
     }
   }, []);
 
-  const handleLogin = (userData) => {
+  const fetchUserProfile = async () => {
+    try {
+      const response = await userAPI.getProfile();
+      console.log('=== PROFILE FETCH DEBUG ===');
+      console.log('Profile API response:', response.data);
+      const profileData = response.data.user; // Fix: Access nested user object
+      console.log('Profile data:', profileData);
+      console.log('Profile picture from API:', profileData?.profilePicture);
+      console.log('Profile picture length:', profileData?.profilePicture?.length);
+      console.log('About to update userState with profile picture');
+      console.log('============================');
+      
+      if (profileData && profileData.profilePicture) {
+        setUserState(prevState => ({
+          ...prevState,
+          profilePicture: profileData.profilePicture,
+        }));
+        
+        // Update localStorage with profile picture
+        const currentUser = getCurrentUser();
+        if (currentUser) {
+          const updatedUser = { ...currentUser, profilePicture: profileData.profilePicture };
+          localStorage.setItem("user", JSON.stringify(updatedUser));
+        }
+      } else {
+        console.log("No profile picture found in profile data");
+      }
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+    }
+  };
+
+  const handleLogin = async (userData) => {
     setUserState({
       isLoggedIn: true,
       userType: userData.isAdmin ? "admin" : "registered",
       userName: userData.name || userData.email,
       userEmail: userData.email,
+      profilePicture: "",
     });
     setLoginModalOpen(false);
+    
+    // Fetch profile data to get profile picture
+    try {
+      const response = await userAPI.getProfile();
+      const profileData = response.data.user; // Fix: Access nested user object
+      
+      if (profileData && profileData.profilePicture) {
+        setUserState(prevState => ({
+          ...prevState,
+          profilePicture: profileData.profilePicture,
+        }));
+        
+        // Update localStorage with profile picture
+        const currentUser = getCurrentUser();
+        if (currentUser) {
+          const updatedUser = { ...currentUser, profilePicture: profileData.profilePicture };
+          localStorage.setItem("user", JSON.stringify(updatedUser));
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch user profile after login:", error);
+    }
   };
 
   const handleRegister = (userData) => {
@@ -118,6 +178,7 @@ function App() {
       userType: "registered",
       userName: userData.name,
       userEmail: userData.email,
+      profilePicture: "",
     });
     setRegisterModalOpen(false);
   };
@@ -131,6 +192,30 @@ function App() {
       userName: "",
       userEmail: "",
     });
+  };
+
+  const updateProfilePicture = (profilePictureUrl) => {
+    console.log('=== UPDATE PROFILE PICTURE CALLED ===');
+    console.log('New profile picture URL:', profilePictureUrl);
+    
+    setUserState(prevState => {
+      console.log('Previous userState:', prevState);
+      const newState = {
+        ...prevState,
+        profilePicture: profilePictureUrl || "",
+      };
+      console.log('New userState:', newState);
+      return newState;
+    });
+    
+    // Update localStorage with profile picture
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+      const updatedUser = { ...currentUser, profilePicture: profilePictureUrl };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      console.log('Updated localStorage user:', updatedUser);
+    }
+    console.log('======================================');
   };
 
   return (
@@ -226,7 +311,7 @@ function App() {
                 path="/profile"
                 element={
                   <ProtectedRoute>
-                    <ProfilePage />
+                    <ProfilePage onProfilePictureUpdate={updateProfilePicture} />
                   </ProtectedRoute>
                 }
               />

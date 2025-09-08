@@ -40,12 +40,14 @@ const LoginModal = ({ open, onClose, onLogin, onSwitchToRegister }) => {
 
       if (response.data.success) {
         setAuthData(response.data.token, {
+          id: response.data.user?.id,
           email: formData.email,
           name: response.data.user?.name,
           isAdmin: formData.isAdmin,
         });
 
         onLogin({
+          id: response.data.user?.id,
           email: formData.email,
           name: response.data.user?.name,
           isAdmin: formData.isAdmin,

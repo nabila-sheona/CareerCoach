@@ -78,6 +78,16 @@ export const userAPI = {
         "Content-Type": "multipart/form-data",
       },
     }),
+  uploadProfilePicture: (formData) => api.post("/user/upload-profile-picture", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  }),
+};
+
+export const cvReviewAPI = {
+  saveCVReview: (cvReviewData) => api.post('/cv-reviews', cvReviewData),
+  getDashboardData: (userId) => api.get(`/cv-reviews/dashboard/${userId}`),
 };
 
 // Admin API

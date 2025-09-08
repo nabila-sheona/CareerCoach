@@ -8,6 +8,7 @@ import Home from "./components/Sections/Home";
 import Features from "./components/Sections/Features";
 import SuccessStoriesPage from "./components/SuccessStoriesPage.js";
 import CVReview from "./pages/CVReviewPage.jsx";
+import DashboardPage from "./pages/DashboardPage.jsx";
 import AptitudeTests from "./components/AptitudeTests";
 import MockInterviews from "./components/MockInterviews";
 import AdminPanel from "./components/Sections/AdminPanel";
@@ -180,6 +181,15 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <CVReview />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <DashboardPage />
                   </ProtectedRoute>
                 }
               />

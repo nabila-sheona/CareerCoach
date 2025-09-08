@@ -96,4 +96,49 @@ export const adminAPI = {
   getSystemStatus: () => api.get("/admin/system-status"),
 };
 
+// CV Review API
+export const cvReviewAPI = {
+  // Save CV review data
+  saveCVReview: (cvReviewData) => api.post('/cv-reviews', cvReviewData),
+  
+  // Get comprehensive dashboard data
+  getDashboardData: (userId) => api.get(`/cv-reviews/dashboard/${userId}`),
+  
+  // Create a new CV review
+  createReview: (reviewData) => api.post("/cv-reviews", reviewData),
+  
+  // Get all reviews for a user
+  getUserReviews: (userId) => api.get(`/cv-reviews/user/${userId}`),
+  
+  // Get a specific review by ID
+  getReviewById: (reviewId) => api.get(`/cv-reviews/${reviewId}`),
+  
+  // Delete a review
+  deleteReview: (reviewId) => api.delete(`/cv-reviews/${reviewId}`),
+  
+  // Get reviews within a date range
+  getReviewsInDateRange: (userId, startDate, endDate) => 
+    api.get(`/cv-reviews/user/${userId}/date-range`, {
+      params: { startDate, endDate }
+    }),
+  
+  // Get review statistics
+  getReviewStatistics: (userId) => api.get(`/cv-reviews/user/${userId}/statistics`),
+  
+  // Get total review count
+  getTotalReviewCount: (userId) => api.get(`/cv-reviews/user/${userId}/count`),
+  
+  // Get progress comparison
+  getProgressComparison: (userId) => api.get(`/cv-reviews/user/${userId}/progress`),
+  
+  // Get key metrics
+  getKeyMetrics: (userId) => api.get(`/cv-reviews/user/${userId}/metrics`),
+  
+  // Get recent feedback
+  getRecentFeedback: (userId) => api.get(`/cv-reviews/user/${userId}/recent-feedback`),
+  
+  // Get progress trends
+  getProgressTrends: (userId) => api.get(`/cv-reviews/user/${userId}/trends`)
+};
+
 export default api;

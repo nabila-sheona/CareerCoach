@@ -31,6 +31,7 @@ import {
   Quiz as TestIcon,
   Mic as InterviewIcon,
   Description as CVIcon,
+  Dashboard as DashboardIcon,
   Close as CloseIcon,
   NotificationsActive as NotificationsActiveIcon,
 } from "@mui/icons-material";
@@ -234,6 +235,7 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
   const navigationItems = [
     { label: "Home", path: "/", icon: HomeIcon },
     ...(userState.isLoggedIn ? [
+      { label: "Dashboard", path: "/dashboard", icon: DashboardIcon },
       { label: "Success Stories", path: "/success-stories-page", icon: SuccessStoriesIcon },
       { label: "CV Review", path: "/cv-review", icon: CVIcon },
       { label: "Tests", path: "/aptitude-tests", icon: TestIcon },

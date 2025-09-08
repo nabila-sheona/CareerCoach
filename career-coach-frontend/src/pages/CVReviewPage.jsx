@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Grid,
@@ -32,10 +33,12 @@ import {
   Search as SearchIcon,
   FormatPaint as FormatPaintIcon,
   Cancel as CancelIcon,
+  Save as SaveIcon,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import fileParsingService from "../services/fileParsingService";
 import geminiService from "../services/geminiService";
+import { cvReviewAPI } from "./shared/api";
 
 const StyledUploadArea = styled(Paper)(({ theme }) => ({
   border: `2px dashed ${theme.palette.primary.main}`,
@@ -68,11 +71,13 @@ const PriorityChip = styled(Chip)(({ priority }) => ({
 }));
 
 const CVReviewPage = () => {
+  const navigate = useNavigate();
   const [uploadedFile, setUploadedFile] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -153,6 +158,57 @@ const CVReviewPage = () => {
     setUploadedFile(null);
     setAnalysisResult(null);
     setError("");
+  };
+
+  const handleCompleteCVReview = async () => {
+    if (!analysisResult) {
+      toast.error('No analysis result to save');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const cvReviewData = {
+        userId: JSON.parse(localStorage.getItem('user'))?.id || 'user123', // Get from auth context or fallback
+        jobDescription,
+        cvFileName: uploadedFile?.name,
+        cvFilePath: uploadedFile?.name, // In real app, this would be the stored file path
+        overallMatch: {
+          score: analysisResult.overallMatch?.score || 0,
+          summary: analysisResult.overallMatch?.summary || ''
+        },
+        strengths: analysisResult.strengths || [],
+        weaknesses: analysisResult.weaknesses || [],
+        missingSkills: analysisResult.missingSkills || [],
+        recommendations: (analysisResult.recommendations || []).map(rec => ({
+          category: rec.category || 'General',
+          suggestion: rec.suggestion || rec,
+          priority: rec.priority || 'medium'
+        })),
+        keywordOptimization: {
+          missingKeywords: analysisResult.keywordOptimization?.missingKeywords || [],
+          suggestions: analysisResult.keywordOptimization?.suggestions || ''
+        },
+        formatting: {
+          score: analysisResult.formatting?.score || 0,
+          suggestions: analysisResult.formatting?.suggestions || ''
+        },
+        suitability: {
+          verdict: analysisResult.suitability?.verdict || 'Needs Assessment',
+          reasoning: analysisResult.suitability?.reasoning || ''
+        },
+        status: 'COMPLETED'
+      };
+
+      await cvReviewAPI.saveCVReview(cvReviewData);
+      toast.success('CV Review saved successfully!');
+      navigate('/');
+    } catch (error) {
+      console.error('Error saving CV review:', error);
+      toast.error('Failed to save CV review. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const getVerdictColor = (verdict) => {
@@ -592,6 +648,33 @@ const CVReviewPage = () => {
                       </Typography>
                     </AnalysisCard>
                   )}
+
+                  {/* Complete CV Review Button */}
+                  <Box sx={{ mt: 3, textAlign: 'center' }}>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      size="large"
+                      onClick={handleCompleteCVReview}
+                      disabled={isSaving}
+                      startIcon={
+                        isSaving ? (
+                          <CircularProgress size={20} color="inherit" />
+                        ) : (
+                          <SaveIcon />
+                        )
+                      }
+                      sx={{
+                        py: 2,
+                        px: 4,
+                        fontSize: "1.1rem",
+                        fontWeight: "medium",
+                        minWidth: 200
+                      }}
+                    >
+                      {isSaving ? "Saving..." : "Complete CV Review"}
+                    </Button>
+                  </Box>
                 </Box>
               )}
             </CardContent>

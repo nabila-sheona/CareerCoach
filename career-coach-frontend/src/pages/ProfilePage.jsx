@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { userAPI } from "../services/api";
+import { isAuthenticated, logout } from "../utils/auth";
 
 import ProfilePictureUpload from "./shared/ProfilePictureUpload";
 import {
@@ -60,8 +61,11 @@ const ProfilePage = ({ onProfilePictureUpdate }) => {
 
       // Check if user is logged in
       const token = localStorage.getItem("token");
-      if (!token) {
+      if (!token || !isAuthenticated()) {
         setError("Please log in to view your profile");
+        if (token && !isAuthenticated()) {
+          logout();
+        }
         setLoading(false);
         return;
       }

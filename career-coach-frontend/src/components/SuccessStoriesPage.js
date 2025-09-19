@@ -20,6 +20,8 @@ import {
   Divider,
   CircularProgress,
   Alert,
+  Chip,
+  Snackbar
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import {
@@ -33,6 +35,7 @@ import {
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { useAuth } from "./context/AuthContext";
+import { isAuthenticated, logout } from '../utils/auth';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(3),
@@ -89,8 +92,11 @@ const SuccessStoriesPage = () => {
           'Content-Type': 'application/json'
         };
         
-        if (token) {
+        if (token && isAuthenticated()) {
           headers['Authorization'] = `Bearer ${token}`;
+        } else if (token && !isAuthenticated()) {
+          // Token exists but is expired, remove it
+          logout();
         }
         
         const response = await fetch('http://localhost:8080/api/success-stories', {
@@ -133,8 +139,11 @@ const SuccessStoriesPage = () => {
 
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
+      if (!token || !isAuthenticated()) {
         setError('Please login to submit a story');
+        if (token && !isAuthenticated()) {
+          logout();
+        }
         return;
       }
 
@@ -175,8 +184,11 @@ const SuccessStoriesPage = () => {
   const handleLikeStory = async (storyId) => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
+      if (!token || !isAuthenticated()) {
         alert('Please login to like stories');
+        if (token && !isAuthenticated()) {
+          logout();
+        }
         return;
       }
 
@@ -222,8 +234,11 @@ const SuccessStoriesPage = () => {
 
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
+      if (!token || !isAuthenticated()) {
         alert('Please login to comment on stories');
+        if (token && !isAuthenticated()) {
+          logout();
+        }
         return;
       }
 

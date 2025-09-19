@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/cv-reviews/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/ws/**").permitAll() // Allow WebSocket endpoints
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

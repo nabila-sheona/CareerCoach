@@ -3,6 +3,8 @@ package com.careercoach.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,7 +20,10 @@ public class CVReview {
     @Id
     private String id;
 
+    @NotBlank(message = "User ID is required")
     private String userId;
+    
+    @NotBlank(message = "Job description is required")
     private String jobDescription;
     private String cvFileName;
     private String cvFilePath;

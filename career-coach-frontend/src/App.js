@@ -16,11 +16,14 @@ import LoginModal from "./components/Modals/LoginModal";
 import RegisterModal from "./components/Modals/RegisterModal";
 import AccessNotice from "./components/Common/AccessNotice";
 import Footer from "./components/Common/Footer";
-import { getCurrentUser } from "./utils/auth";
+import { getCurrentUser, clearExpiredToken } from "./utils/auth";
 import { userAPI } from "./services/api";
 import { AuthProvider } from "./components/context/AuthContext";
 import ProtectedRoute from "./components/Common/ProtectedRoute";
 import ProfilePage from "./pages/ProfilePage"; // Add this import
+import { NotificationProvider } from "./components/context/NotificationContext";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const theme = createTheme({
   palette: {
@@ -93,6 +96,9 @@ function App() {
   const [registerModalOpen, setRegisterModalOpen] = useState(false);
 
   useEffect(() => {
+    // Clear expired token on app initialization
+    clearExpiredToken();
+    
     const user = getCurrentUser();
     if (user) {
       setUserState({
@@ -222,16 +228,17 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider value={{ userState, handleLogin, handleLogout }}>
-        <Router>
-          <div className="App">
-            <Navbar
-              userState={userState}
-              onLoginClick={() => setLoginModalOpen(true)}
-              onRegisterClick={() => setRegisterModalOpen(true)}
-              onLogoutClick={handleLogout}
-            />
+        <NotificationProvider>
+          <Router>
+            <div className="App">
+              <Navbar
+                userState={userState}
+                onLoginClick={() => setLoginModalOpen(true)}
+                onRegisterClick={() => setRegisterModalOpen(true)}
+                onLogoutClick={handleLogout}
+              />
 
-            {!userState.isLoggedIn && <AccessNotice />}
+              {!userState.isLoggedIn && <AccessNotice />}
 
             <Routes>
               <Route
@@ -340,8 +347,23 @@ function App() {
             <Footer />
           </div>
         </Router>
-      </AuthProvider>
-    </ThemeProvider>
+        
+        {/* Toast Container for notifications */}
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+      </NotificationProvider>
+    </AuthProvider>
+  </ThemeProvider>
   );
 }
 

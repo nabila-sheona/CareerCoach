@@ -169,7 +169,7 @@ const CVReviewPage = () => {
     setIsSaving(true);
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
-      const userId = user?.id || '507f1f77bcf86cd799439011'; // Use test user ID as fallback
+      const userId = user?.email || 'test@example.com'; // Use user email to match JWT token and WebSocket subscription
       
       const cvReviewData = {
         userId,
@@ -200,11 +200,17 @@ const CVReviewPage = () => {
           verdict: analysisResult.suitability?.verdict || 'Needs Assessment',
           reasoning: analysisResult.suitability?.reasoning || ''
         },
-        status: 'COMPLETED'
+        status: 'PENDING' // Set as PENDING initially
       };
 
+      // First save the CV review
       const response = await cvReviewAPI.saveCVReview(cvReviewData);
-      toast.success('CV Review saved successfully!');
+      const reviewId = response.data.id;
+      
+      // Then complete it to trigger the notification
+      await cvReviewAPI.completeCVReview(reviewId);
+      
+      toast.success('CV Review completed successfully! You should receive a notification shortly.');
       
       // Navigate to home page after successful save
       navigate('/');

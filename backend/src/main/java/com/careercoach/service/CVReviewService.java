@@ -2,6 +2,8 @@ package com.careercoach.service;
 
 import com.careercoach.models.CVReview;
 import com.careercoach.repository.CVReviewRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,17 +15,76 @@ import java.util.stream.Collectors;
 @Service
 public class CVReviewService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CVReviewService.class);
+
     @Autowired
     private CVReviewRepository cvReviewRepository;
+    
+    @Autowired
+    private NotificationEventPublisher notificationEventPublisher;
 
     // Save a new CV review
     public CVReview saveCVReview(CVReview cvReview) {
-        cvReview.setCreatedAt(LocalDateTime.now());
-        cvReview.setUpdatedAt(LocalDateTime.now());
-        if (cvReview.getReviewDate() == null) {
-            cvReview.setReviewDate(LocalDateTime.now());
+        try {
+            logger.info("DEBUG: CVReviewService.saveCVReview called");
+            logger.info("DEBUG: CVReview object: " + cvReview);
+            
+            // Set timestamps
+            LocalDateTime now = LocalDateTime.now();
+            cvReview.setCreatedAt(now);
+            cvReview.setUpdatedAt(now);
+            if (cvReview.getReviewDate() == null) {
+                cvReview.setReviewDate(now);
+            }
+            
+            logger.info("DEBUG: About to save CVReview to repository");
+            CVReview savedReview = cvReviewRepository.save(cvReview);
+            logger.info("DEBUG: CVReview saved with ID: " + savedReview.getId() + ", status: " + savedReview.getStatus());
+            
+            // Only trigger notification if the review is completed
+            // For PENDING reviews, notification will be sent when completeCVReview is called
+            return savedReview;
+        } catch (Exception e) {
+            logger.error("ERROR: Exception in saveCVReview: " + e.getMessage(), e);
+            throw e;
         }
-        return cvReviewRepository.save(cvReview);
+    }
+
+    // Complete a CV review and trigger notification
+    public CVReview completeCVReview(CVReview cvReview) {
+        try {
+            logger.info("DEBUG: CVReviewService.completeCVReview called for userId: " + cvReview.getUserId());
+            
+            // Save the completed review
+            CVReview savedReview = cvReviewRepository.save(cvReview);
+            logger.info("DEBUG: CV Review completed and saved with ID: " + savedReview.getId());
+            
+            // Extract feedback and score for notification
+            String feedback = "Your CV review has been completed.";
+            
+            if (savedReview.getOverallMatch() != null && savedReview.getOverallMatch().getSummary() != null) {
+                feedback = savedReview.getOverallMatch().getSummary();
+            }
+            
+            // Publish notification only when review is completed
+            try {
+                logger.info("DEBUG: About to publish CV review completed notification");
+                notificationEventPublisher.publishCvReviewCompleted(
+                    savedReview.getUserId(),
+                    savedReview.getId(),
+                    "Career Coach System", // reviewerName
+                    feedback
+                );
+                logger.info("DEBUG: CV review completed notification published successfully for ID: " + savedReview.getId());
+            } catch (Exception e) {
+                logger.error("ERROR: Failed to publish CV review notification: " + e.getMessage(), e);
+            }
+            
+            return savedReview;
+        } catch (Exception e) {
+            logger.error("ERROR: Exception in completeCVReview: " + e.getMessage(), e);
+            throw e;
+        }
     }
 
     // Get dashboard data for a user

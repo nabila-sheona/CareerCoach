@@ -39,6 +39,7 @@ import { styled } from "@mui/material/styles";
 import { useAuth } from "../context/AuthContext";
 import { Link, useLocation } from "react-router-dom";
 import { getFullImageUrl } from "../../utils/imageUtils";
+import NotificationBell from "./NotificationBell";
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: alpha(theme.palette.background.paper, 0.95),
@@ -386,23 +387,7 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
               {/* User Actions */}
               <UserSection>
                 {userState.isLoggedIn && (
-                  <NotificationIconButton
-                    onClick={handleNotificationOpen}
-                    hasNotifications={unreadCount > 0}
-                    aria-label={`${unreadCount} unread notifications`}
-                  >
-                    <NotificationBadge 
-                      badgeContent={unreadCount} 
-                      color="error"
-                      invisible={unreadCount === 0}
-                    >
-                      {unreadCount > 0 ? (
-                        <NotificationsActiveIcon sx={{ fontSize: "1.3rem" }} />
-                      ) : (
-                        <NotificationsIcon sx={{ fontSize: "1.3rem" }} />
-                      )}
-                    </NotificationBadge>
-                  </NotificationIconButton>
+                  <NotificationBell />
                 )}
 
                 {userState.isLoggedIn ? (
@@ -702,16 +687,14 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
           </Box>
         )}
         
-        {notifications.length > 0 && (
-          <>
-            <Divider sx={{ mx: 1, my: 1 }} />
-            <StyledMenuItem sx={{ justifyContent: "center", py: 1.5 }}>
-              <Typography variant="body2" color="primary.main" sx={{ fontWeight: 600 }}>
-                View All Notifications
-              </Typography>
-            </StyledMenuItem>
-          </>
-        )}
+        {notifications.length > 0 && [
+          <Divider key="divider" sx={{ mx: 1, my: 1 }} />,
+          <StyledMenuItem key="view-all" sx={{ justifyContent: "center", py: 1.5 }}>
+            <Typography variant="body2" color="primary.main" sx={{ fontWeight: 600 }}>
+              View All Notifications
+            </Typography>
+          </StyledMenuItem>
+        ]}
       </StyledMenu>
     </>
   );

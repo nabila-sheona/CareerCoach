@@ -1,4 +1,5 @@
 import axios from "axios";
+import { isAuthenticated, logout } from "../utils/auth";
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
@@ -15,7 +16,14 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      // Validate token before adding to request
+      if (isAuthenticated()) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else {
+        // Token is expired, remove it and redirect to login
+        logout();
+        return Promise.reject(new Error('Authentication expired'));
+      }
     }
     return config;
   },
@@ -87,6 +95,7 @@ export const userAPI = {
 
 export const cvReviewAPI = {
   saveCVReview: (cvReviewData) => api.post('/cv-reviews', cvReviewData),
+  completeCVReview: (reviewId) => api.put(`/cv-reviews/${reviewId}/complete`),
   getDashboardData: (userId) => api.get(`/cv-reviews/dashboard/${userId}`),
 };
 

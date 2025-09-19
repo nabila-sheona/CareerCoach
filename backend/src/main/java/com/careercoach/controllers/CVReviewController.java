@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,14 +35,55 @@ public class CVReviewController {
         }
     }
 
+    // Test endpoint
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("CV Review Controller is working!");
+    }
+
     // Create a new CV review
+    @PostMapping("/simple-test")
+    public ResponseEntity<String> simpleTest(@RequestBody Map<String, Object> testData) {
+        System.out.println("DEBUG: Simple test endpoint called");
+        System.out.println("DEBUG: Received data: " + testData);
+        return ResponseEntity.ok("Simple test successful: " + testData.toString());
+    }
+
     @PostMapping
-    public ResponseEntity<CVReview> createCVReview(@RequestBody CVReview cvReview) {
+    public ResponseEntity<?> createCVReview(@RequestBody CVReview cvReview) {
         try {
+            System.out.println("DEBUG: CVReviewController.createCVReview called");
+            System.out.println("DEBUG: Received CVReview - userId: " + (cvReview != null ? cvReview.getUserId() : "null") + 
+                ", jobDescription: " + (cvReview != null ? cvReview.getJobDescription() : "null") + 
+                ", status: " + (cvReview != null ? cvReview.getStatus() : "null"));
+            
+            // Basic validation
+            if (cvReview.getUserId() == null || cvReview.getUserId().trim().isEmpty()) {
+                System.out.println("ERROR: userId is null or empty");
+                return ResponseEntity.badRequest().body("User ID is required");
+            }
+            
+            if (cvReview.getJobDescription() == null || cvReview.getJobDescription().trim().isEmpty()) {
+                System.out.println("ERROR: jobDescription is null or empty");
+                return ResponseEntity.badRequest().body("Job description is required");
+            }
+            
+            // Set default values if not provided
+            if (cvReview.getStatus() == null) {
+                cvReview.setStatus("PENDING");
+            }
+            
+            System.out.println("DEBUG: About to call cvReviewService.saveCVReview");
             CVReview savedReview = cvReviewService.saveCVReview(cvReview);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
+            System.out.println("DEBUG: CVReview saved successfully with ID: " + savedReview.getId());
+            
+            return ResponseEntity.ok(savedReview);
+            
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            System.out.println("ERROR: Exception in createCVReview: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error creating CV review: " + e.getMessage());
         }
     }
 
@@ -78,7 +121,59 @@ public class CVReviewController {
         }
     }
 
-    // Get reviews within a date range
+    // Complete a CV review (simulate the completion process)
+    @PutMapping("/{reviewId}/complete")
+    public ResponseEntity<?> completeCVReview(@PathVariable String reviewId) {
+        try {
+            System.out.println("DEBUG: CVReviewController.completeCVReview called for ID: " + reviewId);
+            
+            Optional<CVReview> optionalReview = cvReviewService.getReviewById(reviewId);
+            if (optionalReview.isEmpty()) {
+                System.out.println("ERROR: CV Review not found with ID: " + reviewId);
+                return ResponseEntity.notFound().build();
+            }
+            
+            CVReview review = optionalReview.get();
+            System.out.println("DEBUG: Found CV Review - userId: " + review.getUserId() + ", status: " + review.getStatus());
+            
+            // Simulate completing the review with mock data
+            CVReview.OverallMatch overallMatch = CVReview.OverallMatch.builder()
+                .score(85)
+                .summary("Your CV shows strong technical skills and relevant experience. Consider adding more quantifiable achievements and updating the formatting for better readability.")
+                .build();
+            
+            review.setOverallMatch(overallMatch);
+            review.setStatus("COMPLETED");
+            review.setUpdatedAt(LocalDateTime.now());
+            
+            // Add some mock feedback
+            review.setStrengths(Arrays.asList(
+                "Strong technical background in Java and Spring Boot",
+                "Relevant experience for the position",
+                "Good educational background"
+            ));
+            
+            review.setWeaknesses(Arrays.asList(
+                "Could include more quantifiable achievements",
+                "Formatting could be improved",
+                "Missing some key industry buzzwords"
+            ));
+            
+            review.setMissingSkills(Arrays.asList("React", "Docker", "AWS"));
+            
+            System.out.println("DEBUG: About to save completed CV Review");
+            CVReview completedReview = cvReviewService.completeCVReview(review);
+            System.out.println("DEBUG: CV Review completed successfully with ID: " + completedReview.getId());
+            
+            return ResponseEntity.ok(completedReview);
+            
+        } catch (Exception e) {
+            System.out.println("ERROR: Exception in completeCVReview: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error completing CV review: " + e.getMessage());
+        }
+    }
     @GetMapping("/user/{userId}/date-range")
     public ResponseEntity<List<CVReview>> getReviewsInDateRange(
             @PathVariable String userId,

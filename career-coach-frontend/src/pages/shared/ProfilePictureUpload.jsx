@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { userAPI } from "../../services/api";
 import { getFullImageUrl } from "../../utils/imageUtils";
+import { isAuthenticated, logout } from "../../utils/auth";
 
 const ProfilePictureUpload = ({
   currentImage,
@@ -54,8 +55,11 @@ const ProfilePictureUpload = ({
     try {
       // Check if user is logged in
       const token = localStorage.getItem("token");
-      if (!token) {
+      if (!token || !isAuthenticated()) {
         setError("Please log in to upload profile picture");
+        if (token && !isAuthenticated()) {
+          logout();
+        }
         setUploading(false);
         return;
       }

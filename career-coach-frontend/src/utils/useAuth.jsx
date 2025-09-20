@@ -76,7 +76,8 @@ function useProvideAuth() {
     setToken(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    navigate("/");
+
+    window.location.href = "http://localhost:3000/"; // full reload to homepage
   };
 
   return {

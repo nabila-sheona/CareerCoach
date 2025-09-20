@@ -70,22 +70,26 @@ const NavButton = styled(Button)(({ theme, active }) => ({
   minWidth: "auto",
   position: "relative",
   color: active ? theme.palette.primary.main : theme.palette.text.primary,
-  backgroundColor: active ? alpha(theme.palette.primary.main, 0.1) : "transparent",
+  backgroundColor: active
+    ? alpha(theme.palette.primary.main, 0.1)
+    : "transparent",
   "&:hover": {
     backgroundColor: alpha(theme.palette.primary.main, 0.08),
     transform: "translateY(-1px)",
   },
-  "&::after": active ? {
-    content: '""',
-    position: "absolute",
-    bottom: -2,
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: "60%",
-    height: 2,
-    backgroundColor: theme.palette.primary.main,
-    borderRadius: 1,
-  } : {},
+  "&::after": active
+    ? {
+        content: '""',
+        position: "absolute",
+        bottom: -2,
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "60%",
+        height: 2,
+        backgroundColor: theme.palette.primary.main,
+        borderRadius: 1,
+      }
+    : {},
 }));
 
 const UserSection = styled(Box)(({ theme }) => ({
@@ -130,17 +134,21 @@ const NotificationBadge = styled(Badge)(({ theme }) => ({
 }));
 
 // Updated notification icon button - removed background colors and glow effect
-const NotificationIconButton = styled(IconButton)(({ theme, hasNotifications }) => ({
-  position: "relative",
-  padding: theme.spacing(1.5),
-  borderRadius: theme.spacing(1.5),
-  color: hasNotifications ? theme.palette.primary.main : theme.palette.text.primary,
-  transition: "all 0.3s ease-in-out",
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.primary.main, 0.08),
-    transform: "scale(1.05)",
-  },
-}));
+const NotificationIconButton = styled(IconButton)(
+  ({ theme, hasNotifications }) => ({
+    position: "relative",
+    padding: theme.spacing(1.5),
+    borderRadius: theme.spacing(1.5),
+    color: hasNotifications
+      ? theme.palette.primary.main
+      : theme.palette.text.primary,
+    transition: "all 0.3s ease-in-out",
+    "&:hover": {
+      backgroundColor: alpha(theme.palette.primary.main, 0.08),
+      transform: "scale(1.05)",
+    },
+  })
+);
 
 const StyledMenu = styled(Menu)(({ theme }) => ({
   "& .MuiPaper-root": {
@@ -171,8 +179,12 @@ const NotificationMenuItem = styled(MenuItem)(({ theme, unread }) => ({
   margin: theme.spacing(0.5, 1),
   position: "relative",
   transition: "all 0.2s ease-in-out",
-  backgroundColor: unread ? alpha(theme.palette.primary.main, 0.05) : "transparent",
-  borderLeft: unread ? `3px solid ${theme.palette.primary.main}` : "3px solid transparent",
+  backgroundColor: unread
+    ? alpha(theme.palette.primary.main, 0.05)
+    : "transparent",
+  borderLeft: unread
+    ? `3px solid ${theme.palette.primary.main}`
+    : "3px solid transparent",
   "&:hover": {
     backgroundColor: alpha(theme.palette.primary.main, 0.08),
   },
@@ -194,21 +206,22 @@ function HideOnScroll(props) {
 
 const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
   const { userState } = useAuth();
-  
+
   // Debug logging for profile picture
   React.useEffect(() => {
-    console.log('=== NAVBAR PROFILE PICTURE DEBUG ===');
-    console.log('UserState:', userState);
-    console.log('Profile picture URL (raw):', userState?.profilePicture);
-    console.log('Profile picture URL (full):', getFullImageUrl(userState?.profilePicture));
-    console.log('Profile picture exists:', !!userState?.profilePicture);
-    console.log('====================================');
+    console.log("=== NAVBAR PROFILE PICTURE DEBUG ===");
+    console.log("UserState:", userState);
+    console.log("Profile picture URL (raw):", userState?.profilePicture);
+    console.log(
+      "Profile picture URL (full):",
+      getFullImageUrl(userState?.profilePicture)
+    );
+    console.log("Profile picture exists:", !!userState?.profilePicture);
+    console.log("====================================");
   }, [userState?.profilePicture]);
-  
+
   const location = useLocation();
   const theme = useTheme();
-  
-
 
   const [mobileMenuAnchor, setMobileMenuAnchor] = useState(null);
   const [notificationAnchor, setNotificationAnchor] = useState(null);
@@ -249,23 +262,34 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
 
   const navigationItems = [
     { label: "Home", path: "/", icon: HomeIcon },
-    ...(userState.isLoggedIn ? [
-      { label: "Dashboard", path: "/dashboard", icon: DashboardIcon },
-      { label: "Success Stories", path: "/success-stories-page", icon: SuccessStoriesIcon },
-      { label: "CV Review", path: "/cv-review", icon: CVIcon },
-      { label: "Tests", path: "/aptitude-tests", icon: TestIcon },
-      { label: "Interviews", path: "/mock-interviews", icon: InterviewIcon },
-    ] : []),
-    ...(userState.userType === "admin" ? [
-      { label: "Admin", path: "/admin", icon: AdminIcon },
-    ] : []),
+    ...(userState.isLoggedIn
+      ? [
+          { label: "Dashboard", path: "/dashboard", icon: DashboardIcon },
+          {
+            label: "Success Stories",
+            path: "/success-stories-page",
+            icon: SuccessStoriesIcon,
+          },
+          { label: "CV Review", path: "/cv-review", icon: CVIcon },
+          { label: "Tests", path: "/aptitude-tests", icon: TestIcon },
+          {
+            label: "Interviews",
+            path: "/mock-interviews",
+            icon: InterviewIcon,
+          },
+        ]
+      : []),
+    ...(userState.userType === "admin"
+      ? [{ label: "Admin", path: "/admin", icon: AdminIcon }]
+      : []),
   ];
 
   const notifications = [
     {
       id: 1,
       title: "Your CV analysis is ready",
-      description: "Your CV has been analyzed with detailed feedback and suggestions.",
+      description:
+        "Your CV has been analyzed with detailed feedback and suggestions.",
       time: "2 hours ago",
       unread: true,
       type: "cv",
@@ -273,7 +297,8 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
     {
       id: 2,
       title: "New aptitude test available",
-      description: "A new logical reasoning test has been added to your dashboard.",
+      description:
+        "A new logical reasoning test has been added to your dashboard.",
       time: "1 day ago",
       unread: true,
       type: "test",
@@ -296,7 +321,7 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
     },
   ];
 
-  const unreadCount = notifications.filter(n => n.unread).length;
+  const unreadCount = notifications.filter((n) => n.unread).length;
 
   const markAllAsRead = () => {
     // This would typically update the notifications state/backend
@@ -370,7 +395,14 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
               </LogoBox>
 
               {/* Desktop Navigation */}
-              <Box sx={{ display: { xs: "none", lg: "flex" }, gap: 1, mx: 4, flexGrow: 1 }}>
+              <Box
+                sx={{
+                  display: { xs: "none", lg: "flex" },
+                  gap: 1,
+                  mx: 4,
+                  flexGrow: 1,
+                }}
+              >
                 {navigationItems.map((item) => (
                   <NavButton
                     key={item.path}
@@ -386,18 +418,24 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
 
               {/* User Actions */}
               <UserSection>
-                {userState.isLoggedIn && (
-                  <NotificationBell />
-                )}
+                {userState.isLoggedIn && <NotificationBell />}
 
                 {userState.isLoggedIn ? (
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                     <Box sx={{ display: { xs: "none", md: "block" } }}>
-                      <Typography variant="body2" sx={{ fontWeight: 500, color: "text.primary" }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: 500, color: "text.primary" }}
+                      >
                         Hi, {userState.userName}
                       </Typography>
-                      <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                        {userState.userType === "admin" ? "Administrator" : "Member"}
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        {userState.userType === "admin"
+                          ? "Administrator"
+                          : "Member"}
                       </Typography>
                     </Box>
                     <IconButton
@@ -408,14 +446,15 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
                         "&:hover": {
                           backgroundColor: "transparent",
                           transform: "scale(1.05)",
-                        }
+                        },
                       }}
                     >
                       <StyledAvatar
                         src={getFullImageUrl(userState.profilePicture)}
                         alt={userState.userName}
                       >
-                        {!userState.profilePicture && userState.userName?.charAt(0)?.toUpperCase()}
+                        {!userState.profilePicture &&
+                          userState.userName?.charAt(0)?.toUpperCase()}
                       </StyledAvatar>
                     </IconButton>
                   </Box>
@@ -448,10 +487,16 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
                         fontWeight: 600,
                         px: 3,
                         py: 1,
-                        boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.3)}`,
+                        boxShadow: `0 4px 12px ${alpha(
+                          theme.palette.primary.main,
+                          0.3
+                        )}`,
                         "&:hover": {
                           transform: "translateY(-1px)",
-                          boxShadow: `0 6px 16px ${alpha(theme.palette.primary.main, 0.4)}`,
+                          boxShadow: `0 6px 16px ${alpha(
+                            theme.palette.primary.main,
+                            0.4
+                          )}`,
                         },
                       }}
                     >
@@ -464,13 +509,13 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
                 <IconButton
                   color="inherit"
                   onClick={handleMobileMenuOpen}
-                  sx={{ 
+                  sx={{
                     display: { lg: "none" },
                     ml: 1,
                     p: 1.5,
                     "&:hover": {
                       backgroundColor: alpha(theme.palette.primary.main, 0.08),
-                    }
+                    },
                   }}
                 >
                   <MenuIcon />
@@ -498,13 +543,21 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
           </Typography>
         </Box>
         <Divider sx={{ mx: 1 }} />
-        <StyledMenuItem component={Link} to="/profile" onClick={handleProfileMenuClose}>
+        <StyledMenuItem
+          component={Link}
+          to="/profile"
+          onClick={handleProfileMenuClose}
+        >
           <ListItemIcon>
             <PersonIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="My Profile" />
         </StyledMenuItem>
-        <StyledMenuItem component={Link} to="/settings" onClick={handleProfileMenuClose}>
+        <StyledMenuItem
+          component={Link}
+          to="/settings"
+          onClick={handleProfileMenuClose}
+        >
           <ListItemIcon>
             <SettingsIcon fontSize="small" />
           </ListItemIcon>
@@ -527,7 +580,15 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <Box sx={{ px: 2, py: 1.5, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Box
+          sx={{
+            px: 2,
+            py: 1.5,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
             Navigation
           </Typography>
@@ -536,7 +597,7 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
           </IconButton>
         </Box>
         <Divider sx={{ mx: 1 }} />
-        
+
         {navigationItems.map((item) => (
           <StyledMenuItem
             key={item.path}
@@ -584,18 +645,20 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         PaperProps={{
-          style: { maxHeight: 400, overflow: 'auto' }
+          style: { maxHeight: 400, overflow: "auto" },
         }}
       >
         {/* Notification Header */}
-        <Box sx={{ 
-          px: 2, 
-          py: 1.5, 
-          display: "flex", 
-          alignItems: "center", 
-          justifyContent: "space-between",
-          borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`
-        }}>
+        <Box
+          sx={{
+            px: 2,
+            py: 1.5,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+          }}
+        >
           <Box>
             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
               Notifications
@@ -608,36 +671,45 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
             <Button
               size="small"
               onClick={markAllAsRead}
-              sx={{ 
-                fontSize: "0.7rem", 
+              sx={{
+                fontSize: "0.7rem",
                 minWidth: "auto",
                 px: 1,
                 py: 0.5,
-                textTransform: "none"
+                textTransform: "none",
               }}
             >
               Mark all read
             </Button>
           )}
         </Box>
-        
+
         {/* Notifications List */}
         {notifications.length > 0 ? (
           notifications.map((notification) => (
-            <NotificationMenuItem 
-              key={notification.id} 
+            <NotificationMenuItem
+              key={notification.id}
               unread={notification.unread}
               onClick={() => handleNotificationClick(notification)}
             >
               <Box sx={{ width: "100%", pr: 1 }}>
-                <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", mb: 0.5 }}>
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    justifyContent: "space-between",
+                    mb: 0.5,
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
                       fontWeight: notification.unread ? 600 : 400,
-                      color: notification.unread ? "text.primary" : "text.secondary",
+                      color: notification.unread
+                        ? "text.primary"
+                        : "text.secondary",
                       pr: 1,
-                      lineHeight: 1.3
+                      lineHeight: 1.3,
                     }}
                   >
                     {notification.title}
@@ -650,27 +722,27 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
                         backgroundColor: "primary.main",
                         borderRadius: "50%",
                         flexShrink: 0,
-                        mt: 0.5
+                        mt: 0.5,
                       }}
                     />
                   )}
                 </Box>
-                <Typography 
-                  variant="caption" 
-                  sx={{ 
-                    color: "text.secondary", 
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
                     display: "block",
                     mb: 0.5,
-                    lineHeight: 1.3
+                    lineHeight: 1.3,
                   }}
                 >
                   {notification.description}
                 </Typography>
-                <Typography 
-                  variant="caption" 
-                  sx={{ 
+                <Typography
+                  variant="caption"
+                  sx={{
                     color: "text.disabled",
-                    fontSize: "0.7rem"
+                    fontSize: "0.7rem",
                   }}
                 >
                   {notification.time}
@@ -680,20 +752,29 @@ const Navbar = ({ onLoginClick, onRegisterClick, onLogoutClick }) => {
           ))
         ) : (
           <Box sx={{ p: 3, textAlign: "center" }}>
-            <NotificationsIcon sx={{ fontSize: 48, color: "text.disabled", mb: 1 }} />
+            <NotificationsIcon
+              sx={{ fontSize: 48, color: "text.disabled", mb: 1 }}
+            />
             <Typography variant="body2" color="text.secondary">
               No notifications yet
             </Typography>
           </Box>
         )}
-        
+
         {notifications.length > 0 && [
           <Divider key="divider" sx={{ mx: 1, my: 1 }} />,
-          <StyledMenuItem key="view-all" sx={{ justifyContent: "center", py: 1.5 }}>
-            <Typography variant="body2" color="primary.main" sx={{ fontWeight: 600 }}>
+          <StyledMenuItem
+            key="view-all"
+            sx={{ justifyContent: "center", py: 1.5 }}
+          >
+            <Typography
+              variant="body2"
+              color="primary.main"
+              sx={{ fontWeight: 600 }}
+            >
               View All Notifications
             </Typography>
-          </StyledMenuItem>
+          </StyledMenuItem>,
         ]}
       </StyledMenu>
     </>

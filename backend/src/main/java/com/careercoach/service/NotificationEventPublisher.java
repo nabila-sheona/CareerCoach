@@ -123,7 +123,7 @@ public class NotificationEventPublisher {
 
             notificationService.createNotification(
                 userId,
-                NotificationType.APPLICATION_STATUS_UPDATE,
+                NotificationType.APPLICATION_STATUS_UPDATED,
                 title,
                 message,
                 priority,
@@ -173,40 +173,8 @@ public class NotificationEventPublisher {
     /**
      * Publish job recommendation notification
      */
-    public void publishJobRecommendation(String userId, String jobTitle, String companyName, String jobId, int matchPercentage) {
-        try {
-            String title = "New Job Recommendation";
-            String message = String.format("We found a %d%% match for you: %s at %s", 
-                matchPercentage,
-                jobTitle != null ? jobTitle : "a great position",
-                companyName != null ? companyName : "an amazing company");
-            
-            Map<String, Object> metadata = Map.of(
-                "jobTitle", jobTitle != null ? jobTitle : "Unknown Position",
-                "companyName", companyName != null ? companyName : "Unknown Company",
-                "jobId", jobId != null ? jobId : "",
-                "matchPercentage", matchPercentage
-            );
 
-            String priority = matchPercentage >= 80 ? "HIGH" : "MEDIUM";
 
-            notificationService.createNotification(
-                userId,
-                NotificationType.JOB_RECOMMENDATION,
-                title,
-                message,
-                priority,
-                jobId,
-                "/jobs/" + jobId,
-                LocalDateTime.now().plusDays(14), // Expire in 14 days
-                metadata
-            );
-
-            log.info("Published job recommendation notification for user {} with {}% match", userId, matchPercentage);
-        } catch (Exception e) {
-            log.error("Failed to publish job recommendation notification: {}", e.getMessage());
-        }
-    }
 
     /**
      * Publish interview scheduled notification
@@ -226,17 +194,7 @@ public class NotificationEventPublisher {
                 "interviewId", interviewId != null ? interviewId : ""
             );
 
-            notificationService.createNotification(
-                userId,
-                NotificationType.INTERVIEW_SCHEDULED,
-                title,
-                message,
-                "HIGH",
-                interviewId,
-                "/dashboard/interviews/" + interviewId,
-                null, // No expiry
-                metadata
-            );
+
 
             log.info("Published interview scheduled notification for user {} and interview {}", userId, interviewId);
         } catch (Exception e) {

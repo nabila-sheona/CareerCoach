@@ -1,7 +1,7 @@
 // src/components/pages/DashboardPage.jsx
 
 import React, { useState, useEffect } from "react";
-import { cvReviewAPI } from "./shared/api";
+import { cvReviewAPI } from "../services/api";
 
 const DashboardPage = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -12,16 +12,30 @@ const DashboardPage = () => {
     fetchDashboardData();
   }, []);
 
+  // Add a refresh function that can be called manually
+  const refreshDashboard = () => {
+    fetchDashboardData();
+  };
+
+  // Auto-refresh when the component becomes visible (user navigates back to dashboard)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchDashboardData();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       const user = JSON.parse(localStorage.getItem('user') || '{}');
-      let userId = user?.id;
-      
-      // Temporary: Use test user ID if no user found
-      if (!userId) {
-        userId = '507f1f77bcf86cd799439011';
-      }
+      let userId = user?.email || 'test@example.com'; // Use email to match CVReviewPage implementation
       
       const response = await cvReviewAPI.getDashboardData(userId);
       setDashboardData(response.data);
@@ -110,10 +124,31 @@ const DashboardPage = () => {
     <div className="min-h-screen bg-gray-100 py-10 px-6">
       <div className="max-w-7xl mx-auto">
 
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">
-             CV Review Dashboard
-           </h1>
-          <div className="bg-white shadow-md rounded-lg p-8 text-center">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">
+            CV Review Dashboard
+          </h1>
+          <button
+            onClick={refreshDashboard}
+            disabled={loading}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Refreshing...
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Refresh
+              </>
+            )}
+          </button>
+        </div>
+        <div className="bg-white shadow-md rounded-lg p-8 text-center">
             <div className="mb-4">
               <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

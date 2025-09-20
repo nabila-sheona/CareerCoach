@@ -212,8 +212,8 @@ const CVReviewPage = () => {
       
       toast.success('CV Review completed successfully! You should receive a notification shortly.');
       
-      // Navigate to home page after successful save
-      navigate('/');
+      // Navigate to dashboard page after successful save and trigger refresh
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error saving CV review:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Unknown error occurred';

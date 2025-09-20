@@ -136,30 +136,38 @@ public class CVReviewController {
             CVReview review = optionalReview.get();
             System.out.println("DEBUG: Found CV Review - userId: " + review.getUserId() + ", status: " + review.getStatus());
             
-            // Simulate completing the review with mock data
-            CVReview.OverallMatch overallMatch = CVReview.OverallMatch.builder()
-                .score(85)
-                .summary("Your CV shows strong technical skills and relevant experience. Consider adding more quantifiable achievements and updating the formatting for better readability.")
-                .build();
-            
-            review.setOverallMatch(overallMatch);
+            // Preserve the existing overall match data from the initial analysis
+            // Only update if no overall match exists (shouldn't happen in normal flow)
+            if (review.getOverallMatch() == null) {
+                CVReview.OverallMatch overallMatch = CVReview.OverallMatch.builder()
+                    .score(75) // Default fallback score if no analysis data exists
+                    .summary("Your CV has been reviewed. Please check the detailed feedback below.")
+                    .build();
+                review.setOverallMatch(overallMatch);
+            }
             review.setStatus("COMPLETED");
             review.setUpdatedAt(LocalDateTime.now());
             
-            // Add some mock feedback
-            review.setStrengths(Arrays.asList(
-                "Strong technical background in Java and Spring Boot",
-                "Relevant experience for the position",
-                "Good educational background"
-            ));
+            // Preserve existing feedback data from the initial analysis
+            // Only add mock feedback if no existing data (shouldn't happen in normal flow)
+            if (review.getStrengths() == null || review.getStrengths().isEmpty()) {
+                review.setStrengths(Arrays.asList(
+                    "Strong technical background",
+                    "Relevant experience for the position",
+                    "Good educational background"
+                ));
+            }
             
-            review.setWeaknesses(Arrays.asList(
-                "Could include more quantifiable achievements",
-                "Formatting could be improved",
-                "Missing some key industry buzzwords"
-            ));
+            if (review.getWeaknesses() == null || review.getWeaknesses().isEmpty()) {
+                review.setWeaknesses(Arrays.asList(
+                    "Could include more quantifiable achievements",
+                    "Formatting could be improved"
+                ));
+            }
             
-            review.setMissingSkills(Arrays.asList("React", "Docker", "AWS"));
+            if (review.getMissingSkills() == null || review.getMissingSkills().isEmpty()) {
+                review.setMissingSkills(Arrays.asList("Additional skills assessment needed"));
+            }
             
             System.out.println("DEBUG: About to save completed CV Review");
             CVReview completedReview = cvReviewService.completeCVReview(review);
